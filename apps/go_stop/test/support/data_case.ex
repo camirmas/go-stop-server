@@ -50,4 +50,11 @@ defmodule GoStop.DataCase do
       end)
     end)
   end
+
+
+  def is_valid(changeset) do
+    %Ecto.Changeset{valid?: valid} = changeset
+
+    valid
+  end
 end
