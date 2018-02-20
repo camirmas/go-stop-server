@@ -39,7 +39,7 @@ defmodule GoStop.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
       {:comeonin, "~> 4.0"},
-      {:argon2_elixir, "~> 1.2"},
+      {:bcrypt_elixir, "~> 0.12"},
       {:ex_machina, "~> 2.1"}
     ]
   end

@@ -33,7 +33,7 @@ defmodule GoStop.User do
   defp generate_encrypted_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :encrypted_password, Comeonin.Argon2.hashpwsalt(password))
+        put_change(changeset, :encrypted_password, Comeonin.Bcrypt.hashpwsalt(password))
 
       _ ->
         changeset
