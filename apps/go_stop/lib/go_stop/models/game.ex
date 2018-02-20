@@ -3,8 +3,8 @@ defmodule GoStop.Game do
   import Ecto.Changeset
 
   schema "games" do
-    field :status, :string
-    many_to_many :users, GoStop.User, join_through: "players"
+    field(:status, :string)
+    many_to_many(:users, GoStop.User, join_through: "players")
 
     timestamps()
   end

@@ -3,21 +3,21 @@ defmodule GoStop.Player do
   import Ecto.Changeset
 
   schema "players" do
-    field :status, :string
-    embeds_one :stats, GoStop.Player.Stats
-    belongs_to :user, GoStop.User
-    belongs_to :game, GoStop.Game
+    field(:status, :string)
+    embeds_one(:stats, GoStop.Player.Stats)
+    belongs_to(:user, GoStop.User)
+    belongs_to(:game, GoStop.Game)
 
     timestamps()
   end
 
- @fields [:user_id, :game_id, :status]
- @accepted_statuses ~w(user-pending active)
+  @fields [:user_id, :game_id, :status]
+  @accepted_statuses ~w(user-pending active)
 
   def create(attrs) do
     %GoStop.Player{}
     |> changeset(attrs)
-    |> Repo.insert
+    |> Repo.insert()
   end
 
   def changeset(struct, params) do

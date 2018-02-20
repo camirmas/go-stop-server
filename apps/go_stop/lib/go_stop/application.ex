@@ -12,8 +12,12 @@ defmodule GoStop.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    Supervisor.start_link([
-      supervisor(GoStop.Repo, []),
-    ], strategy: :one_for_one, name: GoStop.Supervisor)
+    Supervisor.start_link(
+      [
+        supervisor(GoStop.Repo, [])
+      ],
+      strategy: :one_for_one,
+      name: GoStop.Supervisor
+    )
   end
 end
