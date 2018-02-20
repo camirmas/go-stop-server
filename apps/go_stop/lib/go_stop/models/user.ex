@@ -7,13 +7,14 @@ defmodule GoStop.User do
     field :encrypted_password, :string
     field :password, :string, virtual: true
     field :email, :string
+    many_to_many :games, GoStop.Game, join_through: "players"
 
     timestamps()
   end
 
   @required_fields [:username, :email, :password]
 
-  def registration_changeset(struct, params) do
+  def registration_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @required_fields)
     |> validate_required(@required_fields)
