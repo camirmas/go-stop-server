@@ -12,10 +12,11 @@
 defmodule GoStop.Seeds do
   def seed do
     1..5 |> Enum.map(fn _ -> create_user() end)
+    1..5 |> Enum.map(fn _ -> create_game() end)
   end
 
   defp create_user do
-    {:ok, user} = GoStop.User.create_user(%{
+    {:ok, user} = GoStop.User.create(%{
       username: FakerElixir.Helper.unique!(:usernames, fn -> "#{FakerElixir.Internet.user_name}#{rand_number()}" end),
       email: FakerElixir.Helper.unique!(:emails, fn -> "#{rand_number()}-#{FakerElixir.Internet.email}" end),
       password: FakerElixir.Internet.password(:strong)
@@ -25,6 +26,11 @@ defmodule GoStop.Seeds do
     IO.inspect "Created User-- #{user.username}/#{user.id}"
 
     user
+  end
+
+  defp create_game do
+    [status] = Enum.take_random(~w(pending active complete), 1)
+    {:ok, game} = GoStop.Game.create(%{status: status})
   end
 
   defp rand_number, do: :rand.uniform(1000)
