@@ -22,5 +22,10 @@ defmodule GoStopWeb.Schema do
       arg :id, non_null(:id)
       resolve &Resolvers.Game.get_game/3
     end
+
+    @desc "Get all Games"
+    field :games, list_of(:game) do
+      resolve &Resolvers.Game.list_games/3
+    end
   end
 end

@@ -14,6 +14,10 @@ defmodule GoStop.Game do
   @required_fields [:status]
   @accepted_statuses ~w(pending active complete)
 
+  def list do
+    Repo.all(Game)
+  end
+
   @doc """
   Creates a Game as well as related Player.
   """
