@@ -17,7 +17,7 @@ defmodule GoStop.Player do
   def create(attrs) do
     %GoStop.Player{}
     |> changeset(attrs)
-    |> Repo.insert()
+    |> GoStop.Repo.insert()
   end
 
   def changeset(struct, params) do

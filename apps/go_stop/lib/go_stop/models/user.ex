@@ -2,6 +2,8 @@ defmodule GoStop.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias GoStop.{Repo, User}
+
   schema "users" do
     field(:username, :string)
     field(:encrypted_password, :string)
@@ -30,11 +32,28 @@ defmodule GoStop.User do
     |> generate_encrypted_password()
   end
 
+  def list do
+    Repo.all(User)
+  end
+
+  def create(user_data) do
+    registration_changeset(%User{}, user_data)
+    |> Repo.insert
+  end
+
+  def get_by(%{username: username}) do
+    Repo.get_by(User, username: username)
+  end
+  def get_by(%{id: id}) do
+    Repo.get_by(User, id: id)
+  end
+
   defp generate_encrypted_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :encrypted_password, Comeonin.Bcrypt.hashpwsalt(password))
-
+        changeset
+        |> put_change(:encrypted_password, Comeonin.Bcrypt.hashpwsalt(password))
+        |> delete_change(:password) # just for safety
       _ ->
         changeset
     end
