@@ -1,12 +1,12 @@
 defmodule GoStop.Game do
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
-  alias GoStop.{Repo, Game, User}
+  alias GoStop.{Repo, Game, User, Player}
 
   schema "games" do
     field(:status, :string)
-    many_to_many(:users, User, join_through: "players")
+    has_many(:players, Player)
 
     timestamps()
   end
@@ -15,7 +15,7 @@ defmodule GoStop.Game do
   @accepted_statuses ~w(pending active complete)
 
   def list do
-    Repo.all(Game)
+    Repo.all(from g in Game, preload: [players: [:user]])
   end
 
   @doc """
@@ -25,10 +25,11 @@ defmodule GoStop.Game do
     %Game{}
     |> changeset(attrs)
     |> Repo.insert()
+    |> Repo.preload(players: [:user])
   end
 
   def get(id) do
-    Repo.get(Game, id)
+    Repo.get(Game, id) |> Repo.preload(players: [:user])
   end
 
   defp changeset(struct, params) do
