@@ -1,6 +1,6 @@
 defmodule GoStop.User do
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias GoStop.{Repo, User}
 
@@ -33,19 +33,20 @@ defmodule GoStop.User do
   end
 
   def list do
-    Repo.all(User)
+    Repo.all(from u in User, preload: [:games])
   end
 
   def create(user_data) do
     registration_changeset(%User{}, user_data)
     |> Repo.insert
+    |> Repo.preload([:games])
   end
 
   def get_by(%{username: username}) do
-    Repo.get_by(User, username: username)
+    Repo.get_by(User, username: username) |> Repo.preload([:games])
   end
   def get_by(%{id: id}) do
-    Repo.get_by(User, id: id)
+    Repo.get_by(User, id: id) |> Repo.preload([:games])
   end
 
   defp generate_encrypted_password(changeset) do
