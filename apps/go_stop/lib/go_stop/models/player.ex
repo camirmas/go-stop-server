@@ -2,11 +2,13 @@ defmodule GoStop.Player do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias GoStop.{Repo, User, Game, Player}
+
   schema "players" do
     field(:status, :string)
-    embeds_one(:stats, GoStop.Player.Stats)
-    belongs_to(:user, GoStop.User)
-    belongs_to(:game, GoStop.Game)
+    embeds_one(:stats, Player.Stats)
+    belongs_to(:user, User)
+    belongs_to(:game, Game)
 
     timestamps()
   end
@@ -15,9 +17,13 @@ defmodule GoStop.Player do
   @accepted_statuses ~w(user-pending active)
 
   def create(attrs) do
-    %GoStop.Player{}
+    %Player{}
     |> changeset(attrs)
-    |> GoStop.Repo.insert()
+    |> Repo.insert()
+ end
+
+  def get(id) do
+    Repo.get(Player, id) |> Repo.preload([:user])
   end
 
   def changeset(struct, params) do
@@ -27,6 +33,6 @@ defmodule GoStop.Player do
     |> validate_inclusion(:status, @accepted_statuses)
     |> assoc_constraint(:user)
     |> assoc_constraint(:game)
-    |> cast_embed(:stats, with: &GoStop.Player.Stats.changeset/2)
+    |> cast_embed(:stats, with: &Player.Stats.changeset/2)
   end
 end

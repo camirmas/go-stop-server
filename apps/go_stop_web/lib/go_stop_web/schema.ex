@@ -2,6 +2,7 @@ defmodule GoStopWeb.Schema do
   use Absinthe.Schema
   import_types GoStopWeb.Schema.User
   import_types GoStopWeb.Schema.Game
+  import_types GoStopWeb.Schema.Player
 
   alias GoStopWeb.Resolvers
 
@@ -26,6 +27,12 @@ defmodule GoStopWeb.Schema do
     @desc "Get all Games"
     field :games, list_of(:game) do
       resolve &Resolvers.Game.list_games/3
+    end
+
+    @desc "Get a Player by id"
+    field :player, :player do
+      arg :id, non_null(:id)
+      resolve &Resolvers.Player.get_player/3
     end
   end
 end

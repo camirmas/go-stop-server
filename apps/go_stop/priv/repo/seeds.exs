@@ -11,8 +11,11 @@
 # and so on) as they will fail if something goes wrong.
 defmodule GoStop.Seeds do
   def seed do
-    1..5 |> Enum.map(fn _ -> create_user() end)
-    1..5 |> Enum.map(fn _ -> create_game() end)
+    1..5
+    |> Enum.map(fn _ ->
+      game = create_game()
+      1..2 |> Enum.map(fn _ -> create_player(%{game_id: game.id}) end)
+    end)
   end
 
   defp create_user do
@@ -31,6 +34,23 @@ defmodule GoStop.Seeds do
   defp create_game do
     [status] = Enum.take_random(~w(pending active complete), 1)
     {:ok, game} = GoStop.Game.create(%{status: status})
+
+    IO.inspect "Created Game-- #{game.id}"
+
+    game
+  end
+
+  def create_player(%{game_id: game_id}) do
+    [status] = Enum.take_random(~w(user-pending active), 1)
+    {:ok, player} =
+      %{
+        status: status,
+        user_id: create_user().id,
+        game_id: game_id
+      }
+      |> GoStop.Player.create
+
+    IO.inspect "Created Player -- #{player.id}"
   end
 
   defp rand_number, do: :rand.uniform(1000)

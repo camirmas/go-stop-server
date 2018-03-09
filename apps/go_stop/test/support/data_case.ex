@@ -24,6 +24,7 @@ defmodule GoStop.DataCase do
       import GoStop.DataCase
       import GoStop.Factories.User
       import GoStop.Factories.Game
+      import GoStop.Factories.Player
     end
   end
 
