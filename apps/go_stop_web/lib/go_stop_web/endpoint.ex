@@ -36,6 +36,9 @@ defmodule GoStopWeb.Endpoint do
     key: "_go_stop_web_key",
     signing_salt: "uRAtRzDJ"
 
+  # Enable CORS
+  plug Corsica, origins: "*"
+
   plug GoStopWeb.Router
 
   @doc """

@@ -44,7 +44,8 @@ defmodule GoStopWeb.Mixfile do
       {:go_stop, in_umbrella: true},
       {:cowboy, "~> 1.0"},
       {:absinthe, "~> 1.4.0"},
-      {:absinthe_plug, "~> 1.4.0"}
+      {:absinthe_plug, "~> 1.4.0"},
+      {:corsica, "~> 1.0"}
     ]
   end
 
