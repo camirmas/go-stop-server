@@ -1,6 +1,8 @@
 defmodule UserTest do
   use GoStop.DataCase
 
+  alias GoStop.User
+
   @params %{
     username: "Obi-Wan",
     email: "obi-wan@jedicouncil.org",
@@ -9,40 +11,72 @@ defmodule UserTest do
 
   describe "changesets" do
     test "changeset is valid with username, email, password" do
-      changeset = GoStop.User.registration_changeset(%GoStop.User{}, @params)
+      changeset = User.registration_changeset(%User{}, @params)
 
       assert is_valid(changeset)
     end
 
     test "changeset is invalid with improper email format" do
       params = %{@params | email: "wrong"}
-      changeset = GoStop.User.registration_changeset(%GoStop.User{}, params)
+      changeset = User.registration_changeset(%User{}, params)
 
       assert not is_valid(changeset)
     end
 
     test "changeset is invalid with improper password length" do
       params = %{@params | password: "short"}
-      changeset = GoStop.User.registration_changeset(%GoStop.User{}, params)
+      changeset = User.registration_changeset(%User{}, params)
 
       assert not is_valid(changeset)
     end
   end
 
-  describe "model" do
+  test "#list" do
+    {:ok, user} = User.create(@params)
+
+    assert [user] == User.list
+  end
+
+  describe "#create" do
     test "cannot create a user with existing username" do
-      GoStop.User.registration_changeset(%GoStop.User{}, @params) |> GoStop.Repo.insert!
-      {:error, _changeset} =
-        GoStop.User.registration_changeset(%GoStop.User{}, @params)
-        |> GoStop.Repo.insert
+      User.create(@params)
+
+      assert {:error, _changeset} = User.create(@params)
     end
 
     test "cannot create a user with existing email" do
-      GoStop.User.registration_changeset(%GoStop.User{}, @params) |> GoStop.Repo.insert!
+      User.create(@params)
+
       params = %{@params | username: "dude"}
-      {:error, _changeset} =
-        GoStop.User.registration_changeset(%GoStop.User{}, params)
-        |> GoStop.Repo.insert
+      assert {:error, _changeset} = User.create(params)
+    end
+  end
+
+  describe "#get_by" do
+    setup do
+      {:ok, user} = User.create(@params)
+
+      [user: user]
+    end
+
+    test "can get a User by `username`", %{user: user} do
+      res = User.get_by(%{username: user.username})
+
+      assert res == user
+    end
+
+    test "can get a User by id", %{user: user} do
+      res = User.get_by(%{id: user.id})
+
+      assert res == user
+    end
+
+    test "with the wrong username returns `nil`" do
+      assert is_nil User.get_by(%{username: "dude"})
+    end
+
+    test "with the wrong id returns `nil`" do
+      assert is_nil User.get_by(%{id: "123"})
     end
   end
 end
