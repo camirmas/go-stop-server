@@ -23,7 +23,13 @@ defmodule GoStop.Player do
  end
 
   def get(id) do
-    Repo.get(Player, id) |> Repo.preload([:user])
+    Repo.get(Player, id)
+  end
+  def get(id, preload: preload) do
+    case get(id) do
+      nil -> nil
+      player -> player |> Repo.preload(preload)
+    end
   end
 
   def changeset(struct, params) do

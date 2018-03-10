@@ -15,7 +15,10 @@ defmodule GoStop.Game do
   @accepted_statuses ~w(pending active complete)
 
   def list do
-    Repo.all(from g in Game, preload: [players: [:user]])
+    Repo.all(Game)
+  end
+  def list(preload: preload) do
+    Repo.all(from g in Game, preload: ^preload)
   end
 
   @doc """
@@ -25,11 +28,17 @@ defmodule GoStop.Game do
     %Game{}
     |> changeset(attrs)
     |> Repo.insert()
-    |> Repo.preload(players: [:user])
+  end
+
+  def get(id, preload: preload) do
+    case get(id) do
+      nil -> nil
+      game -> game |> Repo.preload(preload)
+    end
   end
 
   def get(id) do
-    Repo.get(Game, id) |> Repo.preload(players: [:user])
+    Repo.get(Game, id)
   end
 
   defp changeset(struct, params) do

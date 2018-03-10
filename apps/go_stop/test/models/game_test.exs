@@ -10,7 +10,7 @@ defmodule GoStop.GameTest do
   test "#list" do
     {:ok, game} = Game.create(@params)
 
-    assert [game] = Game.list
+    assert [^game] = Game.list
   end
 
   describe "#get" do

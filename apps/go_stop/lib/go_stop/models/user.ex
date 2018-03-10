@@ -33,20 +33,29 @@ defmodule GoStop.User do
   end
 
   def list do
-    Repo.all(from u in User, preload: [:games])
+    Repo.all(User)
+  end
+  def list(preload: preload) do
+    Repo.all(from u in User, preload: ^preload)
   end
 
   def create(user_data) do
     registration_changeset(%User{}, user_data)
     |> Repo.insert
-    |> Repo.preload([:games])
   end
 
+  def get_by(field, preload: preload) do
+    case get_by(field) do
+      nil -> nil
+      user ->
+        user |> Repo.preload(preload)
+    end
+  end
   def get_by(%{username: username}) do
-    Repo.get_by(User, username: username) |> Repo.preload([:games])
+    Repo.get_by(User, username: username)
   end
   def get_by(%{id: id}) do
-    Repo.get_by(User, id: id) |> Repo.preload([:games])
+    Repo.get_by(User, id: id)
   end
 
   defp generate_encrypted_password(changeset) do

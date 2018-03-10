@@ -70,5 +70,13 @@ defmodule UserTest do
 
       assert res == user
     end
+
+    test "with the wrong username returns `nil`" do
+      assert is_nil User.get_by(%{username: "dude"})
+    end
+
+    test "with the wrong id returns `nil`" do
+      assert is_nil User.get_by(%{id: "123"})
+    end
   end
 end

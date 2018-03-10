@@ -22,9 +22,7 @@ defmodule GoStop.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import GoStop.DataCase
-      import GoStop.Factories.User
-      import GoStop.Factories.Game
-      import GoStop.Factories.Player
+      import GoStop.Factory
     end
   end
 
