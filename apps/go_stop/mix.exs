@@ -45,6 +45,16 @@ defmodule GoStop.Mixfile do
     ]
   end
 
+  def append_revision(version) do
+    "#{version}+#{revision()}"
+  end
+
+  defp revision() do
+    System.cmd("git", ["rev-parse", "--short", "HEAD"])
+    |> elem(0)
+    |> String.trim_trailing
+  end
+
   # Aliases are shortcuts or tasks specific to the current project.
   # For example, to create, migrate and run the seeds file at once:
   #
