@@ -41,7 +41,7 @@ defmodule GoStop.Mixfile do
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12"},
       {:ex_machina, "~> 2.1"},
-      {:faker_elixir_octopus, "~> 1.0.0",  only: [:dev, :test]}
+      {:faker_elixir_octopus, "~> 1.0.0"}
     ]
   end
 
