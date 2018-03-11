@@ -36,6 +36,9 @@ defmodule GoStopWeb.Endpoint do
     key: "_go_stop_web_key",
     signing_salt: "uRAtRzDJ"
 
+  # Enable CORS
+  plug Corsica, origins: "*"
+
   plug GoStopWeb.Router
 
   @doc """
@@ -46,7 +49,7 @@ defmodule GoStopWeb.Endpoint do
   """
   def init(_key, config) do
     if config[:load_from_system_env] do
-      port = System.get_env("PORT") || raise "expected the PORT environment variable to be set"
+      port = System.get_env("PORT") || "4000"
       {:ok, Keyword.put(config, :http, [:inet6, port: port])}
     else
       {:ok, config}

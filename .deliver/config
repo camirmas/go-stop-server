@@ -1,0 +1,36 @@
+# .deliver/config
+
+APP="go_stop_umbrella"
+
+BUILD_HOST="go-stop.live"
+BUILD_USER="cam"
+BUILD_AT="/home/cam/go_stop_umbrella/build"
+
+PRODUCTION_HOSTS="go-stop.live"
+PRODUCTION_USER="cam"
+DELIVER_TO="/home/cam/release"
+
+# For *Phoenix* projects, symlink prod.secret.exs to our tmp source
+pre_erlang_get_and_update_deps() {
+  local _prod_secret_path="/home/cam/app_config/go_stop_web/prod.secret.exs"
+  if [ "$TARGET_MIX_ENV" = "prod" ]; then
+    __sync_remote "
+      ln -sfn '$_prod_secret_path' '$BUILD_AT/apps/go_stop_web/config/prod.secret.exs'
+    "
+  fi
+
+  local _prod_secret_path_2="/home/cam/app_config/go_stop/prod.secret.exs"
+  if [ "$TARGET_MIX_ENV" = "prod" ]; then
+    __sync_remote "
+      ln -sfn '$_prod_secret_path_2' '$BUILD_AT/apps/go_stop/config/prod.secret.exs'
+    "
+  fi
+}
+
+post_erlang_clean_compile() {
+  status "Migrating database"
+  __sync_remote "
+    cd \"${BUILD_AT}/apps/go_stop\" $SILENCE
+    APP=go_stop MIX_ENV='$TARGET_MIX_ENV' mix do ecto.create, ecto.migrate
+  "
+}
