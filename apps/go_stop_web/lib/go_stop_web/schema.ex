@@ -28,15 +28,22 @@ defmodule GoStopWeb.Schema do
       resolve &Resolvers.User.get_user/3
     end
 
+    @desc "Get all Games"
+    field :games, list_of(:game) do
+      resolve &Resolvers.Game.list_games/3
+    end
+
+    @desc "Create a Game"
+    field :create_game, :game do
+      arg :status, non_null(:string)
+
+      resolve &Resolvers.Game.create_game/3
+    end
+
     @desc "Get a Game by id"
     field :game, :game do
       arg :id, non_null(:id)
       resolve &Resolvers.Game.get_game/3
-    end
-
-    @desc "Get all Games"
-    field :games, list_of(:game) do
-      resolve &Resolvers.Game.list_games/3
     end
 
     @desc "Get a Player by id"
