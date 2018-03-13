@@ -7,15 +7,25 @@ defmodule GoStopWeb.Schema do
   alias GoStopWeb.Resolvers
 
   query do
+    @desc "Get all Users"
+    field :users, list_of(:user) do
+      resolve &Resolvers.User.list_users/3
+    end
+
+    @desc "Create a User"
+    field :create_user, :user do
+      arg :username, non_null(:string)
+      arg :email, non_null(:string)
+      arg :password, non_null(:string)
+      arg :password_confirmation, non_null(:string)
+
+      resolve &Resolvers.User.create_user/3
+    end
+
     @desc "Get a User by username"
     field :user, :user do
       arg :username, non_null(:string)
       resolve &Resolvers.User.get_user/3
-    end
-
-    @desc "Get all Users"
-    field :users, list_of(:user) do
-      resolve &Resolvers.User.list_users/3
     end
 
     @desc "Get a Game by id"
