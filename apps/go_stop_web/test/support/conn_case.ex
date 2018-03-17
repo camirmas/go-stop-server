@@ -20,6 +20,7 @@ defmodule GoStopWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       import GoStopWeb.Router.Helpers
+      import GoStop.Factory
 
       # The default endpoint for testing
       @endpoint GoStopWeb.Endpoint
