@@ -1,5 +1,5 @@
 defmodule GoStop.GameTest do
-  use GoStop.DataCase
+  use GoStop.DataCase, async: true
 
   alias GoStop.{Game}
 

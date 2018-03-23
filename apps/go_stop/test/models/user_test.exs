@@ -1,5 +1,5 @@
 defmodule UserTest do
-  use GoStop.DataCase
+  use GoStop.DataCase, async: true
 
   alias GoStop.User
 

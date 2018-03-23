@@ -1,5 +1,5 @@
 defmodule PlayerTest do
-  use GoStop.DataCase
+  use GoStop.DataCase, async: true
 
   alias GoStop.{Repo, Player}
 
