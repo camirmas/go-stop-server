@@ -33,7 +33,7 @@ defmodule GoStop.Seeds do
 
   defp create_game do
     [status] = Enum.take_random(~w(pending active complete), 1)
-    {:ok, game} = GoStop.Game.create(%{status: status})
+    game = GoStop.Game.create(%{status: status})
 
     IO.inspect "Created Game-- #{game.id}"
 

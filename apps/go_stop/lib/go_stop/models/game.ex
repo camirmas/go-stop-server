@@ -2,11 +2,14 @@ defmodule GoStop.Game do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
 
-  alias GoStop.{Repo, Game, User, Player}
+  alias GoStop.{Repo, Game, User, Player, Stone}
+  alias Ecto.Multi
 
   schema "games" do
     field(:status, :string)
     has_many(:players, Player)
+    has_many(:stones, Stone)
+    has_one(:player_turn, Player)
 
     timestamps()
   end
@@ -30,6 +33,12 @@ defmodule GoStop.Game do
     |> Repo.insert()
   end
 
+  def update(attrs) do
+    %Game{}
+    |> changeset(attrs)
+    |> Repo.update()
+  end
+
   def get(id, preload: preload) do
     case get(id) do
       nil -> nil
@@ -41,9 +50,10 @@ defmodule GoStop.Game do
     Repo.get(Game, id)
   end
 
-  defp changeset(struct, params) do
+  def changeset(struct, params) do
     struct
     |> cast(params, @required_fields)
+    |> cast_assoc(:stones)
     |> validate_required(@required_fields)
     |> validate_inclusion(:status, @accepted_statuses)
   end
