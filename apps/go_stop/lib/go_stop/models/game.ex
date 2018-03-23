@@ -7,6 +7,8 @@ defmodule GoStop.Game do
   schema "games" do
     field(:status, :string)
     has_many(:players, Player)
+    embeds_one(:state, Game.State)
+    has_one(:player_turn, Player)
 
     timestamps()
   end
