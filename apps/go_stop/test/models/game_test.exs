@@ -37,12 +37,12 @@ defmodule GoStop.GameTest do
     end
 
     test "with no params returns an error and changeset" do
-      {:error, changeset} = Game.create(%{})
+      {:error, :game, changeset, %{}} = Game.create(%{})
       refute is_valid(changeset)
     end
 
     test "with invalid status returns an error and changeset" do
-      {:error, changeset} = Game.create(%{@params | status: "wrong"})
+      {:error, :game, changeset, %{}} = Game.create(%{@params | status: "wrong"})
       refute is_valid(changeset)
     end
   end
