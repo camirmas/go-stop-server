@@ -6,7 +6,7 @@ defmodule GoStop.Repo.Migrations.AddStonesTable do
       add :x, :integer, null: false
       add :y, :integer, null: false
       add :color, :integer, null: false
-      add :game_id, references(:games)
+      add :game_id, references(:games), null: false
 
       timestamps()
     end

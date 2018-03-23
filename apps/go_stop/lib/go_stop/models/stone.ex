@@ -13,12 +13,13 @@ defmodule GoStop.Stone do
     timestamps()
   end
 
-  @required_fields [:x, :y, :color]
+  @required_fields [:x, :y, :color, :game_id]
 
-  # Empty: 0
+  # White: 0
   # Black: 1
-  # White: 2
-  @accepted_colors [0, 1, 2]
+  @accepted_colors [0, 1]
+
+  @accepted_coords 0..18
 
   def create(attrs) do
     %Stone{}
@@ -29,8 +30,10 @@ defmodule GoStop.Stone do
   def changeset(struct, params) do
     struct
     |> cast(params, @required_fields)
+    |> assoc_constraint(:game)
     |> validate_required(@required_fields)
     |> validate_inclusion(:color, @accepted_colors)
-    |> assoc_constraint(:game)
+    |> validate_inclusion(:x, @accepted_coords)
+    |> validate_inclusion(:y, @accepted_coords)
   end
 end
