@@ -28,20 +28,9 @@ defmodule GoStop.Game do
   Creates a Game as well as related Player.
   """
   def create(attrs) do
-    with {:ok, result} <-
-      Multi.new
-      |> Multi.run(:game, fn _ ->
-        %Game{}
-        |> changeset(attrs)
-        |> Repo.insert()
-      end)
-      |> Multi.run(:stones, fn %{game: game} ->
-        Stone.bulk_create(game)
-      end)
-      |> Repo.transaction
-    do
-      {:ok, result.game}
-    end
+    %Game{}
+    |> changeset(attrs)
+    |> Repo.insert()
   end
 
   def update(attrs) do

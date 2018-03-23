@@ -20,17 +20,6 @@ defmodule GoStop.Stone do
   # White: 2
   @accepted_colors [0, 1, 2]
 
-  def bulk_create(game) do
-    Repo.transaction(fn ->
-      1..18 |> Enum.map(fn y ->
-        1..18 |> Enum.map(fn x ->
-          %{x: x, y: y, color: 0, game: game}
-          |> create()
-        end)
-      end)
-    end)
-  end
-
   def create(attrs) do
     %Stone{}
     |> changeset(attrs)
