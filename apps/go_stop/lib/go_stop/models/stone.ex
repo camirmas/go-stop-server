@@ -35,5 +35,6 @@ defmodule GoStop.Stone do
     |> validate_inclusion(:color, @accepted_colors)
     |> validate_inclusion(:x, @accepted_coords)
     |> validate_inclusion(:y, @accepted_coords)
+    |> unique_constraint(:position, name: :stones_x_y_game_id_index)
   end
 end
