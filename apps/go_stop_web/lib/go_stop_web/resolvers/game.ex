@@ -21,6 +21,6 @@ defmodule GoStopWeb.Resolvers.Game do
   end
 
   defp preloads do
-    [players: [:user]]
+    [:stones, players: [:user]]
   end
 end

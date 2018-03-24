@@ -3,6 +3,7 @@ defmodule GoStopWeb.Schema do
   import_types GoStopWeb.Schema.User
   import_types GoStopWeb.Schema.Game
   import_types GoStopWeb.Schema.Player
+  import_types GoStopWeb.Schema.Stone
 
   alias GoStopWeb.Resolvers
 
@@ -59,6 +60,23 @@ defmodule GoStopWeb.Schema do
     field :player, :player do
       arg :id, non_null(:id)
       resolve &Resolvers.Player.get_player/3
+    end
+
+    @desc "Add Stone to Game"
+    field :add_stone, :stone do
+      arg :x, non_null(:integer)
+      arg :y, non_null(:integer)
+      arg :color, non_null(:integer)
+      arg :game_id, non_null(:id)
+
+      resolve &Resolvers.Stone.add_stone/3
+    end
+
+    @desc "Remove Stone"
+    field :remove_stone, :stone do
+      arg :id, non_null(:id)
+
+      resolve &Resolvers.Stone.remove_stone/3
     end
   end
 end
