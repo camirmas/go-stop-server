@@ -69,7 +69,14 @@ defmodule GoStopWeb.Schema do
       arg :color, non_null(:integer)
       arg :game_id, non_null(:id)
 
-      resolve &Resolvers.Game.add_stone/3
+      resolve &Resolvers.Stone.add_stone/3
+    end
+
+    @desc "Remove Stone"
+    field :remove_stone, :stone do
+      arg :id, non_null(:id)
+
+      resolve &Resolvers.Stone.remove_stone/3
     end
   end
 end

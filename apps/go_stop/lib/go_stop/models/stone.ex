@@ -27,6 +27,13 @@ defmodule GoStop.Stone do
     |> Repo.insert()
   end
 
+  def delete(id) do
+    case Repo.get(Stone, id) do
+      nil -> {:error, "Failed: Stone does not exist"}
+      stone -> Repo.delete(stone)
+    end
+  end
+
   def changeset(struct, params) do
     struct
     |> cast(params, @required_fields)
