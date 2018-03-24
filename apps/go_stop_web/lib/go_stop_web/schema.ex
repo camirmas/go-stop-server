@@ -3,6 +3,7 @@ defmodule GoStopWeb.Schema do
   import_types GoStopWeb.Schema.User
   import_types GoStopWeb.Schema.Game
   import_types GoStopWeb.Schema.Player
+  import_types GoStopWeb.Schema.Stone
 
   alias GoStopWeb.Resolvers
 
