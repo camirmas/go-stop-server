@@ -15,11 +15,9 @@ use Mix.Config
 # which you typically run after static files are built.
 config :go_stop_web, GoStopWeb.Endpoint,
   load_from_system_env: true,
-  url: [host: "https://go-stop.live", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json",
-  server: true,
-  root: ".",
-  version: Application.spec(:go_stop_web, :vsn)
+  url: [scheme: "https", host: "https://go-stop.live", port: 443,
+        force_ssl: [rewrite_on: [:x_forwarded_proto]]],
+  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
 
 # ## SSL Support
 #
@@ -57,8 +55,3 @@ config :go_stop_web, GoStopWeb.Endpoint,
 # start per endpoint:
 #
 #     config :go_stop_web, GoStopWeb.Endpoint, server: true
-#
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
