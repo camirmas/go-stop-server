@@ -5,7 +5,11 @@ defmodule GoStopWeb.Resolvers.User do
 
   def create_user(_parent, data, _resolution) do
     case GoStop.User.create(data) do
-      {:ok, _} = user -> user
+      {:ok, user} ->
+        {:ok, token, claims} = GoStopWeb.Guardian.encode_and_sign(user)
+        user = user |> Map.from_struct() |> Map.put(:token, token)
+        {:ok, user}
+
       {:error, changeset} -> {:error, "Failed: #{parse_errors(changeset)}"}
     end
   end
