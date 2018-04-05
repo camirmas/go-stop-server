@@ -18,6 +18,11 @@ config :go_stop_web, GoStopWeb.Endpoint,
   pubsub: [name: GoStopWeb.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures Guardian Authentication
+config :go_stop_web, GoStopWeb.Guardian,
+  issuer: "go_stop_web",
+  secret_key: "ReewDCP4r3BgK5nVOQCbLu1+YG/OGkfwIX5Z1wFNy1JiDTZepR5FBXnSRCH3EhxB"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
