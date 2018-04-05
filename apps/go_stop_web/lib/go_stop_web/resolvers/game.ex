@@ -3,11 +3,15 @@ defmodule GoStopWeb.Resolvers.Game do
     {:ok, GoStop.Game.list(preload: preloads())}
   end
 
-  def create_game(_parent, data, _resolution) do
+  def create_game(_parent, data, %{context: %{current_user: current_user}}) do
     case GoStop.Game.create(data) do
       {:ok, _} = game -> game
       {:error, changeset} -> {:error, "Failed: #{parse_errors(changeset)}"}
     end
+  end
+
+  def create_game(_parent, data, context) do
+    {:error, "Failed: user not authenticated"}
   end
 
   def get_game(_parent, %{id: id}, _resolution) do

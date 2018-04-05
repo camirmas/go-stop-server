@@ -3,6 +3,7 @@ defmodule GoStopWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug GoStopWeb.Plugs.UserContext
   end
 
   scope "/api" do
