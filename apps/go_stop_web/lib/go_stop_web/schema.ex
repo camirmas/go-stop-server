@@ -29,6 +29,14 @@ defmodule GoStopWeb.Schema do
       resolve &Resolvers.User.get_user/3
     end
 
+    @desc "Log in a User"
+    field :log_in, :user do
+      arg :username, non_null(:string)
+      arg :password, non_null(:string)
+
+      resolve &Resolvers.Authorization.log_in/3
+    end
+
     @desc "Get all Games"
     field :games, list_of(:game) do
       resolve &Resolvers.Game.list_games/3
