@@ -31,7 +31,8 @@ defmodule GoStopWeb.SchemaTest do
       query = """
       {
         createUser(username: "duder", email: "dude@dude.dude" password: "dudedude", passwordConfirmation: "dudedude") {
-          id
+          id,
+          token
         }
       }
       """
@@ -40,7 +41,8 @@ defmodule GoStopWeb.SchemaTest do
         |> post("/api", %{query: query})
         |> json_response(200)
 
-      assert %{"data" => %{"createUser" => %{"id" => _}}} = res
+      assert res["data"]["createUser"]["id"]
+      assert res["data"]["createUser"]["token"]
     end
 
     test "it provides an error if validations fail", %{conn: conn} do
