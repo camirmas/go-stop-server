@@ -1,5 +1,6 @@
 defmodule GoStopWeb.SchemaTest do
   use GoStopWeb.ConnCase, async: true
+  import GoStopWeb.Guardian
 
   describe "users" do
     setup do
@@ -220,6 +221,45 @@ defmodule GoStopWeb.SchemaTest do
         |> json_response(200)
 
       assert res == %{"data" => %{"game" => nil}}
+    end
+  end
+
+  describe "createGame" do
+    test "creates a game with an authorized user", %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
+
+      query = """
+      {
+        createGame(status: "pending") {
+          id
+        }
+      }
+      """
+      res =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+      assert %{"data" => %{"createGame" => %{"id" => _}}} = res
+    end
+
+    test "returns an error when the user is unauthorized", %{conn: conn} do
+      query = """
+      {
+        createGame(status: "pending") {
+          id
+        }
+      }
+      """
+      res =
+        conn
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+      assert %{"errors" => [%{"message" => message}]} = res
+      assert message == "Failed: user not authenticated"
     end
   end
 
