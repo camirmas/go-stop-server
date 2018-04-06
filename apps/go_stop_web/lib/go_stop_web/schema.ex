@@ -13,41 +13,15 @@ defmodule GoStopWeb.Schema do
       resolve &Resolvers.User.list_users/3
     end
 
-    @desc "Create a User"
-    field :create_user, :user do
-      arg :username, non_null(:string)
-      arg :email, non_null(:string)
-      arg :password, non_null(:string)
-      arg :password_confirmation, non_null(:string)
-
-      resolve &Resolvers.User.create_user/3
-    end
-
     @desc "Get a User by username"
     field :user, :user do
       arg :username, non_null(:string)
       resolve &Resolvers.User.get_user/3
     end
 
-    @desc "Log in a User"
-    field :log_in, :user do
-      arg :username, non_null(:string)
-      arg :password, non_null(:string)
-
-      resolve &Resolvers.Authorization.log_in/3
-    end
-
     @desc "Get all Games"
     field :games, list_of(:game) do
       resolve &Resolvers.Game.list_games/3
-    end
-
-    @desc "Create a Game"
-    field :create_game, :game do
-      arg :status, non_null(:string)
-      arg :opponent_id, non_null(:id)
-
-      resolve &Resolvers.Game.create_game/3
     end
 
     @desc "Get a Game by id"
@@ -60,6 +34,34 @@ defmodule GoStopWeb.Schema do
     field :player, :player do
       arg :id, non_null(:id)
       resolve &Resolvers.Player.get_player/3
+    end
+  end
+
+  mutation do
+    @desc "Create a User"
+    field :create_user, :user do
+      arg :username, non_null(:string)
+      arg :email, non_null(:string)
+      arg :password, non_null(:string)
+      arg :password_confirmation, non_null(:string)
+
+      resolve &Resolvers.User.create_user/3
+    end
+
+    @desc "Log in a User"
+    field :log_in, :user do
+      arg :username, non_null(:string)
+      arg :password, non_null(:string)
+
+      resolve &Resolvers.Authorization.log_in/3
+    end
+
+    @desc "Create a Game"
+    field :create_game, :game do
+      arg :status, non_null(:string)
+      arg :opponent_id, non_null(:id)
+
+      resolve &Resolvers.Game.create_game/3
     end
 
     @desc "Add Stone to Game"
