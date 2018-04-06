@@ -227,11 +227,12 @@ defmodule GoStopWeb.SchemaTest do
   describe "createGame" do
     test "creates a game with an authorized user", %{conn: conn} do
       user = insert(:user)
+      user2 = insert(:user)
       {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
 
       query = """
       {
-        createGame(status: "pending") {
+        createGame(status: "pending", opponentId: #{user2.id}) {
           id
         }
       }
@@ -248,7 +249,7 @@ defmodule GoStopWeb.SchemaTest do
     test "returns an error when the user is unauthorized", %{conn: conn} do
       query = """
       {
-        createGame(status: "pending") {
+        createGame(status: "pending", opponentId: 1) {
           id
         }
       }
@@ -260,6 +261,27 @@ defmodule GoStopWeb.SchemaTest do
 
       assert %{"errors" => [%{"message" => message}]} = res
       assert message == "Failed: user not authenticated"
+    end
+
+    test "returns an error when the opponent cannot be found", %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
+
+      query = """
+      {
+        createGame(status: "pending", opponentId: 123) {
+          id
+        }
+      }
+      """
+      res =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+        assert %{"errors" => [%{"message" => message}]} = res
+        assert message == "Failed: user does not exist"
     end
   end
 
