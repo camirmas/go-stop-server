@@ -347,41 +347,48 @@ defmodule GoStopWeb.SchemaTest do
 
   describe "addStone" do
     setup do
-      [game: insert(:game)]
+      player = insert(:player)
+      {:ok, token, _} = encode_and_sign(player.user, %{}, token_type: :access)
+
+      [game: player.game, token: token]
     end
 
-    test "creates a stone with valid params", %{conn: conn, game: game} do
-      query = """
-      {
-        addStone(gameId: #{game.id}, x: 0, y: 0, color: 0) {
-          color
+    test "creates a stone with valid params and authentication",
+      %{conn: conn, game: game, token: token} do
+        query = """
+        {
+          addStone(gameId: #{game.id}, x: 0, y: 0, color: 0) {
+            color
+          }
         }
-      }
-      """
-      res =
-        conn
-        |> post("/api", %{query: query})
-        |> json_response(200)
+        """
+        res =
+          conn
+          |> put_req_header("authorization", "Bearer " <> token)
+          |> post("/api", %{query: query})
+          |> json_response(200)
 
-      assert res == %{"data" => %{"addStone" => %{"color" => 0}}}
+        assert res == %{"data" => %{"addStone" => %{"color" => 0}}}
     end
 
-    test "returns errors with invalid params", %{conn: conn, game: game} do
-      query = """
-      {
-        addStone(game_id: #{game.id}1, x: 0, y: 0, color: 0) {
-          id
+    test "returns errors with invalid params",
+      %{conn: conn, game: game, token: token} do
+        query = """
+        {
+          addStone(game_id: #{game.id}1, x: 0, y: 0, color: 0) {
+            id
+          }
         }
-      }
-      """
+        """
 
-      res =
-        conn
-        |> post("/api", %{query: query})
-        |> json_response(200)
+        res =
+          conn
+          |> put_req_header("authorization", "Bearer " <> token)
+          |> post("/api", %{query: query})
+          |> json_response(200)
 
-      assert %{"errors" => [%{"message" => message}]} = res
-      assert message == "Failed: game does not exist"
+        assert %{"errors" => [%{"message" => message}]} = res
+        assert message == "Failed: game does not exist"
     end
   end
 
