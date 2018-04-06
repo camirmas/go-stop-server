@@ -30,7 +30,7 @@ defmodule GoStopWeb.SchemaTest do
   describe "createUser" do
     test "it creates a User with proper params", %{conn: conn} do
       query = """
-      {
+      mutation CreateUser {
         createUser(username: "duder", email: "dude@dude.dude" password: "dudedude", passwordConfirmation: "dudedude") {
           id,
           token
@@ -48,7 +48,7 @@ defmodule GoStopWeb.SchemaTest do
 
     test "it provides an error if validations fail", %{conn: conn} do
       query = """
-      {
+      mutation CreateUser {
         createUser(username: "dude", email: "bad", password: "dudedude", passwordConfirmation: "dudedude") {
           id
         }
@@ -116,7 +116,7 @@ defmodule GoStopWeb.SchemaTest do
 
     test "returns a token if the username/password is valid", %{conn: conn} do
       query = """
-      {
+      mutation LogIn {
         logIn(username: "duder", password: "dooddude") {
           token
         }
@@ -132,7 +132,7 @@ defmodule GoStopWeb.SchemaTest do
 
     test "returns an error if the username/password is invalid", %{conn: conn} do
       query = """
-      {
+      mutation LogIn {
         logIn(username: "duder", password: "dood") {
           token
         }
@@ -149,7 +149,7 @@ defmodule GoStopWeb.SchemaTest do
 
     test "returns an error if the user is not found", %{conn: conn} do
       query = """
-      {
+      mutation LogIn {
         logIn(username: "dude", password: "dood") {
           token
         }
@@ -231,7 +231,7 @@ defmodule GoStopWeb.SchemaTest do
       {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
 
       query = """
-      {
+      mutation CreateGame {
         createGame(status: "pending", opponentId: #{user2.id}) {
           id
         }
@@ -248,7 +248,7 @@ defmodule GoStopWeb.SchemaTest do
 
     test "returns an error when the user is unauthorized", %{conn: conn} do
       query = """
-      {
+      mutation CreateGame {
         createGame(status: "pending", opponentId: 1) {
           id
         }
@@ -268,7 +268,7 @@ defmodule GoStopWeb.SchemaTest do
       {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
 
       query = """
-      {
+      mutation CreateGame {
         createGame(status: "pending", opponentId: 123) {
           id
         }
@@ -335,7 +335,7 @@ defmodule GoStopWeb.SchemaTest do
     test "creates a stone with valid params and authentication",
       %{conn: conn, game: game, token: token} do
         query = """
-        {
+        mutation AddStone {
           addStone(gameId: #{game.id}, x: 0, y: 0, color: 0) {
             color
           }
@@ -353,7 +353,7 @@ defmodule GoStopWeb.SchemaTest do
     test "returns errors with invalid params",
       %{conn: conn, game: game, token: token} do
         query = """
-        {
+        mutation AddStone {
           addStone(game_id: #{game.id}1, x: 0, y: 0, color: 0) {
             id
           }
