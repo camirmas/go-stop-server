@@ -232,7 +232,7 @@ defmodule GoStopWeb.SchemaTest do
 
       query = """
       mutation CreateGame {
-        createGame(status: "pending", opponentId: #{user2.id}) {
+        createGame(opponentId: #{user2.id}) {
           id
         }
       }
@@ -249,7 +249,7 @@ defmodule GoStopWeb.SchemaTest do
     test "returns an error when the user is unauthorized", %{conn: conn} do
       query = """
       mutation CreateGame {
-        createGame(status: "pending", opponentId: 1) {
+        createGame(opponentId: 1) {
           id
         }
       }
@@ -269,7 +269,7 @@ defmodule GoStopWeb.SchemaTest do
 
       query = """
       mutation CreateGame {
-        createGame(status: "pending", opponentId: 123) {
+        createGame(opponentId: 123) {
           id
         }
       }

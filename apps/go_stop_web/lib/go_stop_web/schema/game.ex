@@ -6,5 +6,6 @@ defmodule GoStopWeb.Schema.Game do
     field :status, :string
     field :players, list_of(:player)
     field :stones, list_of(:stone)
+    field :player_turn_id, :id
   end
 end
