@@ -263,49 +263,6 @@ defmodule GoStopWeb.SchemaTest do
     end
   end
 
-  describe "createPlayer" do
-    setup do
-      user = insert(:user)
-      game = insert(:game)
-
-      [user: user, game: game]
-    end
-
-    test "creates a Player with valid params", %{conn: conn, user: %{id: user_id}, game: %{id: game_id}} do
-      query = """
-      {
-        createPlayer(userId: #{user_id}, gameId: #{game_id}, status: "user-pending") {
-          id
-        }
-      }
-      """
-      res =
-        conn
-        |> post("/api", %{query: query})
-        |> json_response(200)
-
-      assert %{"data" => %{"createPlayer" => %{"id" => _}}} = res
-    end
-
-    test "returns errors with invalid params", %{conn: conn, user: %{id: user_id}, game: %{id: game_id}} do
-      query = """
-      {
-        createPlayer(userId: #{user_id}1, gameId: #{game_id}, status: "user-pending") {
-          id
-        }
-      }
-      """
-
-      res =
-        conn
-        |> post("/api", %{query: query})
-        |> json_response(200)
-
-      assert %{"errors" => [%{"message" => message}]} = res
-      assert message == "Failed: user does not exist"
-    end
-  end
-
   describe "player" do
     setup do
       [player: insert(:player)]

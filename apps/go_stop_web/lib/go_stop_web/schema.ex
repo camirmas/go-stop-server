@@ -55,15 +55,6 @@ defmodule GoStopWeb.Schema do
       resolve &Resolvers.Game.get_game/3
     end
 
-    @desc "Create a Player"
-    field :create_player, :player do
-      arg :user_id, non_null(:id)
-      arg :game_id, non_null(:id)
-      arg :status, non_null(:string)
-
-      resolve &Resolvers.Player.create_player/3
-    end
-
     @desc "Get a Player by id"
     field :player, :player do
       arg :id, non_null(:id)
