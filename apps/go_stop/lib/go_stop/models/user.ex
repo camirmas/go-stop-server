@@ -23,12 +23,8 @@ defmodule GoStop.User do
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 8)
     |> validate_confirmation(:password, message: "Passwords do not match")
-    |> unique_constraint(:email, name: :users_username_index)
-    |> unique_constraint(
-      :username,
-      name: :users_email_index,
-      message: "Username is already taken"
-    )
+    |> unique_constraint(:email, name: :users_email_index)
+    |> unique_constraint(:username, name: :users_username_index)
     |> generate_encrypted_password()
   end
 
