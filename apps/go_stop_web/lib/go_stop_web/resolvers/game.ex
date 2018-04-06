@@ -3,7 +3,7 @@ defmodule GoStopWeb.Resolvers.Game do
     {:ok, GoStop.Game.list(preload: preloads())}
   end
 
-  def create_game(_parent, data, %{context: %{current_user: current_user}}) do
+  def create_game(_parent, data, %{context: %{current_user: _}}) do
     case GoStop.Game.create(data) do
       {:ok, _} = game -> game
       {:error, changeset} -> {:error, "Failed: #{parse_errors(changeset)}"}
