@@ -45,6 +45,7 @@ defmodule GoStopWeb.Schema do
     @desc "Create a Game"
     field :create_game, :game do
       arg :status, non_null(:string)
+      arg :opponent_id, non_null(:id)
 
       resolve &Resolvers.Game.create_game/3
     end
