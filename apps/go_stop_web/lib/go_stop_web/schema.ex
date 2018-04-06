@@ -79,12 +79,5 @@ defmodule GoStopWeb.Schema do
 
       resolve &Resolvers.Stone.add_stone/3
     end
-
-    @desc "Remove Stone"
-    field :remove_stone, :stone do
-      arg :id, non_null(:id)
-
-      resolve &Resolvers.Stone.remove_stone/3
-    end
   end
 end

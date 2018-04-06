@@ -391,46 +391,4 @@ defmodule GoStopWeb.SchemaTest do
         assert message == "Failed: game does not exist"
     end
   end
-
-  describe "removeStone" do
-    setup do
-      game = insert(:game)
-      {:ok, stone} = GoStop.Stone.create(%{game_id: game.id, x: 0, y: 0, color: 0})
-
-      [stone: stone]
-    end
-
-    test "removes the stone with proper id", %{conn: conn, stone: stone} do
-      query = """
-      {
-        removeStone(id: #{stone.id}) {
-          color
-        }
-      }
-      """
-      res =
-        conn
-        |> post("/api", %{query: query})
-        |> json_response(200)
-
-      assert res == %{"data" => %{"removeStone" => %{"color" => 0}}}
-    end
-
-    test "returns an error with invalid id", %{conn: conn, stone: stone} do
-      query = """
-      {
-        removeStone(id: #{stone.id}1) {
-          id
-        }
-      }
-      """
-      res =
-        conn
-        |> post("/api", %{query: query})
-        |> json_response(200)
-
-      assert %{"errors" => [%{"message" => message}]} = res
-      assert message == "Failed: Stone does not exist"
-    end
-  end
 end
