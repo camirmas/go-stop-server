@@ -329,13 +329,14 @@ defmodule GoStopWeb.SchemaTest do
   describe "addStone" do
     setup do
       player = insert(:player)
+      insert(:player, %{game: player.game})
 
       {:ok, token, _} = encode_and_sign(player.user, %{}, token_type: :access)
 
       [token: token, player: player]
     end
 
-    test "creates a stone with valid params and authentication",
+    test "creates a stone with valid params and authentication, and changes turn",
       %{conn: conn, token: token, player: player} do
         {:ok, game} =
           player.game
@@ -356,6 +357,7 @@ defmodule GoStopWeb.SchemaTest do
           |> json_response(200)
 
         assert res == %{"data" => %{"addStone" => %{"color" => 0}}}
+        refute Game.get(game.id).player_turn_id == player.id
     end
 
     test "returns errors with wrong player turn",
@@ -375,7 +377,7 @@ defmodule GoStopWeb.SchemaTest do
           |> json_response(200)
 
         assert %{"errors" => [%{"message" => message}]} = res
-        assert message == "Failed: wrong player turn"
+        assert message == "Failed: player must wait a turn"
     end
 
     test "returns errors with invalid params",
