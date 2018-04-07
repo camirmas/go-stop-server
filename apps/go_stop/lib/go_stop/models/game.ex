@@ -3,7 +3,6 @@ defmodule GoStop.Game do
   import Ecto.{Changeset, Query}
 
   alias GoStop.{Repo, Game, User, Player, Stone}
-  alias Ecto.Multi
 
   schema "games" do
     field(:status, :string)
@@ -14,6 +13,8 @@ defmodule GoStop.Game do
     timestamps()
   end
 
+  @accepted_fields [:status, :player_turn_id]
+  @required_fields [:status]
   @accepted_statuses ~w(pending active complete)
 
   @doc """
@@ -31,30 +32,10 @@ defmodule GoStop.Game do
   Creates a Game as well as related Players, and sets `player_turn_id`
   to the ID of the Player that initiated the Game.
   """
-  def create(%{user_id: user_id, opponent_id: opponent_id} = attrs) do
-    multi =
-      Multi.new()
-      |> Multi.run(:game, fn _ ->
-        %Game{}
-        |> changeset(attrs)
-        |> put_change(:status, "pending")
-        |> Repo.insert()
-      end)
-      |> Multi.run(:player_1, fn %{game: game} ->
-        Player.create(%{status: "active", user_id: user_id, game_id: game.id})
-      end)
-      |> Multi.run(:player_2, fn %{game: game} ->
-        Player.create(%{status: "user-pending", user_id: opponent_id, game_id: game.id})
-      end)
-      |> Multi.run(:updated_game, fn %{game: game, player_1: player_1} ->
-        Game.update(game, %{player_turn_id: player_1.id})
-      end)
-
-    case Repo.transaction(multi) do
-      {:ok, %{updated_game: game}} ->
-        {:ok, game}
-      err -> err
-    end
+  def create(attrs) do
+    %Game{}
+    |> changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
@@ -63,11 +44,12 @@ defmodule GoStop.Game do
   def update(game, attrs) do
     game
     |> changeset(attrs)
+    |> validate_change(:player_turn_id, fn _, id -> validate_turn(game, id) end)
     |> Repo.update()
   end
 
   @doc """
-  Gets a game by ID. Allows optional preloading.
+  Gets a game by ID.
   """
   def get(id, preload: preload) do
     case get(id) do
@@ -82,8 +64,18 @@ defmodule GoStop.Game do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:player_turn_id])
+    |> cast(params, @accepted_fields)
     |> cast_assoc(:stones)
+    |> validate_required(@required_fields)
     |> validate_inclusion(:status, @accepted_statuses)
+  end
+
+  defp validate_turn(game, player_turn_id) do
+    player_ids = Enum.map(game.players, &(&1.id))
+    if player_turn_id in player_ids do
+      []
+    else
+      [player_turn_id: "Must be a valid Player"]
+    end
   end
 end
