@@ -1,28 +1,38 @@
 defmodule GoStopWeb.Resolvers.Stone do
-  alias Ecto.Multi
+  alias Ecto.{Multi, Changeset}
 
-  alias GoStop.{Repo, Stone}
+  alias GoStop.{Repo, Game, Stone}
 
   def add_stone(_parent,
     %{game_id: game_id} = data, %{context: %{current_user: current_user}}) do
-      result =
-        Repo.transaction(fn ->
+      multi =
+        Multi.new
+        |> Multi.run(:stone, fn _ ->
           case GoStop.Stone.create(data) do
             {:ok, stone} ->
+              # TODO: refactor this section to be extensible for game rules
               if player_turn?(game_id, current_user) do
-                stone
+                {:ok, stone |> Repo.preload(:game)}
               else
-                Repo.rollback(:wrong_turn)
+                changeset =
+                  stone
+                  |> Stone.changeset(%{})
+                  |> Changeset.add_error(:player, "must wait a turn")
+                {:error, changeset}
               end
-            {:error, changeset} -> Repo.rollback("Failed: #{parse_errors(changeset)}")
+            err -> err
           end
         end)
+        |> Multi.run(:game, fn %{stone: stone} ->
+          game = stone.game |> Repo.preload(:players)
+          {game, new_player} = get_new_player(game, current_user)
+          Game.update(game, %{player_turn_id: new_player.id})
+        end)
 
-      case result do
-        {:ok, stone} = stone -> stone
-        {:error, :wrong_turn} ->
-          {:error, "Failed: wrong player turn"}
-        err -> err
+      case Repo.transaction(multi) do
+        {:ok, %{stone: stone}} -> {:ok, stone}
+        {:error, _name, changeset, _} ->
+          {:error, "Failed: #{parse_errors(changeset)}"}
       end
   end
 
@@ -37,11 +47,16 @@ defmodule GoStopWeb.Resolvers.Stone do
   end
 
   defp player_turn?(game_id, current_user) do
-    case GoStop.Game.get(game_id, preload: [:players]) do
+    case Game.get(game_id, preload: [:players]) do
       nil -> false
       game ->
         player = Enum.find(game.players, fn p -> p.user_id == current_user.id end)
         player && player.id == game.player_turn_id
     end
+  end
+
+  defp get_new_player(game, current_user) do
+    player = Enum.find(game.players, fn p -> p.user_id != current_user.id end)
+    {game, player}
   end
 end
