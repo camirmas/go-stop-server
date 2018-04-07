@@ -14,7 +14,8 @@ defmodule GoStop.Seeds do
     1..5
     |> Enum.map(fn _ ->
       game = create_game()
-      1..2 |> Enum.map(fn _ -> create_player(%{game_id: game.id}) end)
+      create_player(%{game_id: game.id, color: "black"})
+      create_player(%{game_id: game.id, color: "white"})
     end)
   end
 
@@ -40,13 +41,14 @@ defmodule GoStop.Seeds do
     game
   end
 
-  def create_player(%{game_id: game_id}) do
+  def create_player(%{game_id: game_id, color: color}) do
     [status] = Enum.take_random(~w(user-pending active), 1)
     {:ok, player} =
       %{
         status: status,
         user_id: create_user().id,
-        game_id: game_id
+        game_id: game_id,
+        color: color
       }
       |> GoStop.Player.create
 

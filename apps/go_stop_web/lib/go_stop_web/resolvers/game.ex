@@ -17,10 +17,20 @@ defmodule GoStopWeb.Resolvers.Game do
           Game.create(%{status: "pending"})
         end)
         |> Multi.run(:player_1, fn %{game: game} ->
-          Player.create(%{status: "active", user_id: current_user.id, game_id: game.id})
+          Player.create(%{
+            status: "active",
+            user_id: current_user.id,
+            game_id: game.id,
+            color: "black"
+          })
         end)
         |> Multi.run(:player_2, fn %{game: game} ->
-          Player.create(%{status: "user-pending", user_id: opponent_id, game_id: game.id})
+          Player.create(%{
+            status: "user-pending",
+            user_id: opponent_id,
+            game_id: game.id,
+            color: "white"
+          })
         end)
         |> Multi.run(:updated_game, fn %{game: game, player_1: player_1} ->
           game = Repo.preload(game, preloads())

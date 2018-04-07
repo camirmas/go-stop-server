@@ -6,6 +6,7 @@ defmodule GoStop.Player do
 
   schema "players" do
     field(:status, :string)
+    field(:color, :string)
     embeds_one(:stats, Player.Stats)
     belongs_to(:user, User)
     belongs_to(:game, Game)
@@ -13,8 +14,9 @@ defmodule GoStop.Player do
     timestamps()
   end
 
-  @fields [:user_id, :game_id, :status]
+  @fields [:user_id, :game_id, :status, :color]
   @accepted_statuses ~w(user-pending active)
+  @accepted_colors ~w(black white)
 
   def create(attrs) do
     %Player{}
@@ -37,8 +39,10 @@ defmodule GoStop.Player do
     |> cast(params, @fields)
     |> validate_required(@fields)
     |> validate_inclusion(:status, @accepted_statuses)
+    |> validate_inclusion(:color, @accepted_colors)
     |> assoc_constraint(:user)
     |> assoc_constraint(:game)
+    |> unique_constraint(:color, name: :players_game_id_color_index)
     |> cast_embed(:stats, with: &Player.Stats.changeset/2)
   end
 end
