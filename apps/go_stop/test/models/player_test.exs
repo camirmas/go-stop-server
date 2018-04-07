@@ -6,14 +6,27 @@ defmodule PlayerTest do
   @params %{
     user_id: 1,
     game_id: 1,
-    status: "active"
+    status: "active",
+    color: "black"
   }
 
   describe "changesets" do
-    test "changeset is valid with user_id, game_id, status" do
+    test "changeset is valid with proper params" do
       changeset = Player.changeset(%Player{}, @params)
 
       assert is_valid(changeset)
+    end
+
+    test "changeset is invalid with missing color" do
+      changeset = Player.changeset(%Player{}, Map.drop(@params, [:color]))
+
+      refute is_valid(changeset)
+    end
+
+    test "changeset is invalid with improper color" do
+      changeset = Player.changeset(%Player{}, %{@params | color: "wrong"})
+
+      refute is_valid(changeset)
     end
 
     test "changeset is invalid with missing status" do
@@ -35,21 +48,22 @@ defmodule PlayerTest do
     test "cannot create a player with invalid user_id" do
       %{id: game_id} = insert(:game)
 
-      changeset = Player.changeset(
-        %Player{}, %{ @params | game_id: game_id }
-      )
-      {:error, _changeset} =
-        changeset |> Repo.insert()
+      assert {:error, changeset} = Player.create(%{ @params | game_id: game_id })
+      assert [user: {"does not exist", _}] = changeset.errors
     end
 
     test "cannot create a player with invalid game_id" do
       %{id: user_id} = insert(:user)
 
-      changeset = Player.changeset(
-        %Player{}, %{ @params | user_id: user_id }
-      )
-      {:error, _changeset} =
-        changeset |> Repo.insert()
+      {:error, changeset} = Player.create(%{ @params | user_id: user_id })
+      assert [game: {"does not exist", _}] = changeset.errors
+    end
+
+    test "cannot create two Players with the same color for both games" do
+      player = insert(:player)
+      {:error, changeset} =
+        Player.create(%{@params | game_id: player.game_id, color: player.color})
+      assert [color: {"has already been taken", _}] = changeset.errors
     end
   end
 

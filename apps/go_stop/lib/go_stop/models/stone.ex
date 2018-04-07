@@ -7,7 +7,7 @@ defmodule GoStop.Stone do
   schema "stones" do
     field :x, :integer
     field :y, :integer
-    field :color, :integer
+    field :color, :string
     belongs_to :game, Game
 
     timestamps()
@@ -15,9 +15,7 @@ defmodule GoStop.Stone do
 
   @required_fields [:x, :y, :color, :game_id]
 
-  # White: 0
-  # Black: 1
-  @accepted_colors [0, 1]
+  @accepted_colors ~w(black white)
 
   @accepted_coords 0..18
 

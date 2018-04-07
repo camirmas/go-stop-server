@@ -6,6 +6,7 @@ defmodule GoStop.Repo.Migrations.AddPlayersTable do
       add :user_id, references(:users)
       add :game_id, references(:games)
       add :status, :string, null: false
+      add :color, :string, null: false
       add :stats, :map
 
       timestamps()
@@ -13,5 +14,6 @@ defmodule GoStop.Repo.Migrations.AddPlayersTable do
 
     create index(:players, :user_id)
     create index(:players, :game_id)
+    create unique_index(:players, [:game_id, :color])
   end
 end

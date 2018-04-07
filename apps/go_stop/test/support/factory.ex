@@ -20,10 +20,12 @@ defmodule GoStop.Factory do
 
   def player_factory do
     [status] = ~w(user-pending active) |> Enum.take_random(1)
+    [color] = ~w(black white) |> Enum.take_random(1)
     %Player{
       status: status,
       user: build(:user),
-      game: build(:game)
+      game: build(:game),
+      color: color
     }
   end
 end

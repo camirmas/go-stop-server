@@ -328,8 +328,8 @@ defmodule GoStopWeb.SchemaTest do
 
   describe "addStone" do
     setup do
-      player = insert(:player)
-      insert(:player, %{game: player.game})
+      player = insert(:player, %{color: "white"})
+      insert(:player, %{game: player.game, color: "black"})
 
       {:ok, token, _} = encode_and_sign(player.user, %{}, token_type: :access)
 
@@ -345,7 +345,7 @@ defmodule GoStopWeb.SchemaTest do
 
         query = """
         mutation AddStone {
-          addStone(gameId: #{game.id}, x: 0, y: 0, color: 0) {
+          addStone(gameId: #{game.id}, x: 0, y: 0) {
             color
           }
         }
@@ -356,7 +356,7 @@ defmodule GoStopWeb.SchemaTest do
           |> post("/api", %{query: query})
           |> json_response(200)
 
-        assert res == %{"data" => %{"addStone" => %{"color" => 0}}}
+        assert res == %{"data" => %{"addStone" => %{"color" => "white"}}}
         refute Game.get(game.id).player_turn_id == player.id
     end
 
@@ -364,7 +364,7 @@ defmodule GoStopWeb.SchemaTest do
       %{conn: conn, player: player, token: token} do
         query = """
         mutation AddStone {
-          addStone(game_id: #{player.game.id}, x: 0, y: 0, color: 0) {
+          addStone(game_id: #{player.game.id}, x: 0, y: 0) {
             id
           }
         }
@@ -389,7 +389,7 @@ defmodule GoStopWeb.SchemaTest do
 
         query = """
         mutation AddStone {
-          addStone(game_id: #{game.id}1, x: 0, y: 0, color: 0) {
+          addStone(game_id: #{game.id}1, x: 0, y: 0) {
             id
           }
         }

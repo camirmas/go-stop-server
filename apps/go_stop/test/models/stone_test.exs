@@ -6,7 +6,7 @@ defmodule GoStop.StoneTest do
   @params %{
     x: 0,
     y: 0,
-    color: 1, # Black
+    color: "black",
     game_id: 1
   }
 
@@ -20,7 +20,7 @@ defmodule GoStop.StoneTest do
     test "is invalid with improper color" do
       changeset = Stone.changeset(%Stone{}, %{@params | color: 4})
       refute is_valid(changeset)
-      assert changeset.errors == [color: {"is invalid", [validation: :inclusion]}]
+      assert [color: {"is invalid", _}] = changeset.errors
     end
 
     test "is invalid with a wrong coordinate" do
