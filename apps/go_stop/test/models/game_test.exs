@@ -3,15 +3,10 @@ defmodule GoStop.GameTest do
 
   alias GoStop.{Game, Repo}
 
-  setup do
-    user1 = insert(:user)
-    user2 = insert(:user)
+  @params %{status: "pending", player_turn_id: nil}
 
-    [params: %{user_id: user1.id, opponent_id: user2.id}]
-  end
-
-  test "#list", %{params: params} do
-    {:ok, game} = Game.create(params)
+  test "#list" do
+    game = insert(:game)
 
     assert Game.list == [game]
   end
@@ -31,23 +26,34 @@ defmodule GoStop.GameTest do
   end
 
   describe "#create" do
-    test "with valid params returns a `Game`", %{params: params} do
-      {:ok, game} = Game.create(params)
+    test "with valid params returns a `Game`" do
+      {:ok, game} = Game.create(@params)
       game = Repo.preload(game, :players)
 
       assert game.status == "pending"
-      assert game.player_turn_id
-      assert length(game.players) == 2
+      refute game.player_turn_id
     end
 
-    test "with invalid player 1 returns an error and changeset" do
-      {:error, :player_1, changeset, _data} = Game.create(%{user_id: 1, opponent_id: 2})
-      refute is_valid(changeset)
+    test "with invalid status an error and changeset" do
+      {:error, changeset} = Game.create(%{status: "bad"})
+      assert changeset.errors == [status: {"is invalid", [validation: :inclusion]}]
+    end
+  end
+
+  describe "#update" do
+    test "with valid params returns an updated `Game`" do
+      game = insert(:game) |> Repo.preload(:players)
+      assert {:ok, _} = Game.update(game, @params)
     end
 
-    test "with invalid player 2 returns an error and changeset", %{params: params} do
-      {:error, :player_2, changeset, _data} = Game.create(%{params | opponent_id: 2})
-      refute is_valid(changeset)
+    test "with valid Player turn returns an error changeset" do
+      player = insert(:player) |> Repo.preload([game: [:players]])
+      assert {:ok, _} = Game.update(player.game, %{@params | player_turn_id: player.id})
+    end
+
+    test "with invalid Player turn returns an error changeset" do
+      game = insert(:game) |> Repo.preload(:players)
+      assert {:error, _} = Game.update(game, %{@params | player_turn_id: 1})
     end
   end
 end
