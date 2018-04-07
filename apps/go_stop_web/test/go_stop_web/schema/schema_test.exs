@@ -2,6 +2,8 @@ defmodule GoStopWeb.SchemaTest do
   use GoStopWeb.ConnCase, async: true
   import GoStopWeb.Guardian
 
+  alias GoStop.{Repo, Game}
+
   describe "users" do
     setup do
       1..5 |> Enum.map(fn _ -> insert(:player) end)
@@ -327,13 +329,19 @@ defmodule GoStopWeb.SchemaTest do
   describe "addStone" do
     setup do
       player = insert(:player)
+
       {:ok, token, _} = encode_and_sign(player.user, %{}, token_type: :access)
 
-      [game: player.game, token: token]
+      [token: token, player: player]
     end
 
     test "creates a stone with valid params and authentication",
-      %{conn: conn, game: game, token: token} do
+      %{conn: conn, token: token, player: player} do
+        {:ok, game} =
+          player.game
+          |> Repo.preload(:players)
+          |> Game.update(%{player_turn_id: player.id})
+
         query = """
         mutation AddStone {
           addStone(gameId: #{game.id}, x: 0, y: 0, color: 0) {
@@ -350,8 +358,33 @@ defmodule GoStopWeb.SchemaTest do
         assert res == %{"data" => %{"addStone" => %{"color" => 0}}}
     end
 
+    test "returns errors with wrong player turn",
+      %{conn: conn, player: player, token: token} do
+        query = """
+        mutation AddStone {
+          addStone(game_id: #{player.game.id}, x: 0, y: 0, color: 0) {
+            id
+          }
+        }
+        """
+
+        res =
+          conn
+          |> put_req_header("authorization", "Bearer " <> token)
+          |> post("/api", %{query: query})
+          |> json_response(200)
+
+        assert %{"errors" => [%{"message" => message}]} = res
+        assert message == "Failed: wrong player turn"
+    end
+
     test "returns errors with invalid params",
-      %{conn: conn, game: game, token: token} do
+      %{conn: conn, player: player, token: token} do
+        {:ok, game} =
+          player.game
+          |> Repo.preload(:players)
+          |> Game.update(%{player_turn_id: player.id})
+
         query = """
         mutation AddStone {
           addStone(game_id: #{game.id}1, x: 0, y: 0, color: 0) {
