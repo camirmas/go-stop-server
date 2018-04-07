@@ -56,14 +56,21 @@ defmodule GoStopWeb.Schema do
       resolve &Resolvers.Authorization.log_in/3
     end
 
-    @desc "Create a Game"
+    @desc """
+    Create a Game. This is an authenticated mutation: you must provide
+    an Authorization header with the format: Bearer [token]
+    """
+
     field :create_game, :game do
       arg :opponent_id, non_null(:id)
 
       resolve &Resolvers.Game.create_game/3
     end
 
-    @desc "Add Stone to Game"
+    @desc """
+    Add Stone to Game. This is an authenticated mutation: you must provide
+    an Authorization header with the format: Bearer [token]
+    """
     field :add_stone, :stone do
       arg :x, non_null(:integer)
       arg :y, non_null(:integer)
