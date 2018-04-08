@@ -169,9 +169,12 @@ defmodule GoStopWeb.SchemaTest do
 
   describe "games" do
     setup do
-      1..5 |> Enum.map(fn _ -> insert(:player) end)
+      insert(:player)
+      player = insert(:player)
 
-      :ok
+      {:ok, token, _} = encode_and_sign(player.user, %{}, token_type: :access)
+
+      [token: token]
     end
 
     test "gets a list of Games", %{conn: conn} do
@@ -184,7 +187,21 @@ defmodule GoStopWeb.SchemaTest do
         |> json_response(200)
 
       %{"data" => %{"games" => games}} = res
-      assert length(games) == 5
+      assert length(games) == 2
+    end
+
+    test "gets a User's list of Games", %{conn: conn, token: token} do
+      query = """
+      { games { id } }
+      """
+      res =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+      %{"data" => %{"games" => games}} = res
+      assert length(games) == 1
     end
   end
 

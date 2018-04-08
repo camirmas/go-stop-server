@@ -2,8 +2,12 @@ defmodule GoStopWeb.Resolvers.Game do
   alias Ecto.Multi
   alias GoStop.{Repo, Game, Player}
 
+  def list_games(_parent, _args, %{context: %{current_user: current_user}}) do
+    {:ok, Game.list_for_user(current_user) |> Repo.preload(preloads())}
+  end
+
   def list_games(_parent, _args, _resolution) do
-    {:ok, GoStop.Game.list(preload: preloads())}
+    {:ok, Game.list(preload: preloads())}
   end
 
   def create_game(_parent,
