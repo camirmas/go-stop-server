@@ -1,10 +1,15 @@
 language: elixir
 elixir:
-  - 1.6.1
+- 1.6.1
 addons:
-    postgresql: "9.5"
+  postgresql: '9.5'
 before_script:
-  - mix ecto.create
-  - mix ecto.migrate
-env:
-  - MIX_ENV=test
+- mix ecto.create
+- mix ecto.migrate
+deploy:
+  provider: heroku
+  api_key:
+    secure: dxon9ym4BM4IcSHU3h8xdu2coIBZCNzss2QdszpQQhBWPdZe7rC+Zwm4ogBJBGerKcDa8xjuf45gWGVCTc+DW0GqUeODtxEORpOMhwy2tExgt1euQ05O0emt+UiVKH90BFExwGIqr3aCuviziP7D5r55ycwEhVBdGOJfzt2e/O7m/9NnfHtNLoxDQemIZgAOnfO8hVXj2GPMmACISfe29iOj9/d29NcBrK3BcLnZ5mWdFmtfxCOJdeQhY+3gnFuT6H5qautbDsv1KWfpb4hgJvD/7FQUn4eBM93KTvj3AwK2RRjvyfcNvN98xJNrt6taEUPJ8uUwVlDUXffCCKEXizHWMjDOHSxb3S+4nHrMk2zx42NbaKT6qmFEIcjLte5GfInRTlpb73UI4vuWA92qzS1PxuNbKhBHoV2H9/XkeKo+BsL58Ib74sEAmq0+XceclECb8KDyH2mIGHeuJ3nGCRVt6m+hOFx6V0NQuGi6jCQ3bdw34UCAzi5VQijUujiULeMv6OxOdn8uOhN41vZedgB+G5Kq3Ihjm6JnOqXuR0orXpBUAU6nil72MYCfYS5DAPqys+jS+NV3+V9xam2ESt1guSrx7vQkTDUHbOy0Pxb5mwjTf2Ed/C8WcYpybMqdfH9pAPyeRz3KOvvTQMyaA5qfQ2cyjMGRyD8+/gYztB8=
+  app: go-stop
+  on:
+    repo: camirmas/go-stop-server
