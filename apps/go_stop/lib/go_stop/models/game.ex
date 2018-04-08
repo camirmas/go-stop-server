@@ -1,5 +1,6 @@
 defmodule GoStop.Game do
   use Ecto.Schema
+  import Ecto
   import Ecto.{Changeset, Query}
 
   alias GoStop.{Repo, Game, User, Player, Stone}
@@ -26,6 +27,20 @@ defmodule GoStop.Game do
   end
   def list do
     Repo.all(Game)
+  end
+
+  @doc """
+  Lists Games for a given User.
+  """
+  def list_for_user(user, preload: preload) do
+    user
+    |> list_for_user()
+    |> Repo.preload(preload)
+  end
+  def list_for_user(user) do
+    user
+    |> assoc(:games)
+    |> Repo.all
   end
 
   @doc """

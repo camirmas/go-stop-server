@@ -11,6 +11,12 @@ defmodule GoStop.GameTest do
     assert Game.list == [game]
   end
 
+  test "#list_for_user" do
+    player = insert(:player) |> Repo.preload(:user)
+
+    assert Game.list_for_user(player.user) == [player.game]
+  end
+
   describe "#get" do
     setup do
       [game: insert(:game)]
