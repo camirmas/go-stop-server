@@ -37,7 +37,7 @@ defmodule GoStopWeb.Endpoint do
     signing_salt: "uRAtRzDJ"
 
   # Enable CORS
-  plug Corsica, origins: "*"
+  plug Corsica, origins: "*", allow_headers: ["accept", "content-type"]
 
   plug GoStopWeb.Router
 
