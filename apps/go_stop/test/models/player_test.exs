@@ -77,4 +77,23 @@ defmodule PlayerTest do
       assert is_nil Player.get("123")
     end
   end
+
+  test "#update" do
+    player = insert(:player)
+
+    {:ok, player} = Player.update(player, %{has_passed: true})
+    assert player.has_passed
+  end
+
+  test "#get_by" do
+    player = insert(:player)
+
+    assert Player.get_by(%{game_id: player.game_id})
+  end
+
+  test "#list_for_game" do
+    player = insert(:player) |> Repo.preload(:game)
+
+    assert Player.list_for_game(player.game, preload: [:game, :user]) == [player]
+  end
 end

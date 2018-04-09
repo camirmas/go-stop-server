@@ -1,6 +1,6 @@
 defmodule GoStop.Player do
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   alias GoStop.{Repo, User, Game, Player}
 
@@ -19,11 +19,31 @@ defmodule GoStop.Player do
   @accepted_statuses ~w(user-pending active)
   @accepted_colors ~w(black white)
 
+  def list_for_game(game, preload: preload) do
+    query = from p in Player,
+      where: p.game_id == ^game.id,
+      preload: ^preload
+
+    Repo.all(query)
+  end
+  def list_for_game(game) do
+    query = from p in Player,
+      where: p.game_id == ^game.id
+
+    Repo.all(query)
+  end
+
   def create(attrs) do
     %Player{}
     |> changeset(attrs)
     |> Repo.insert()
- end
+  end
+
+  def update(player, attrs) do
+    player
+    |> changeset(attrs)
+    |> Repo.update()
+  end
 
   def get(id) do
     Repo.get(Player, id)
@@ -33,6 +53,10 @@ defmodule GoStop.Player do
       nil -> nil
       player -> player |> Repo.preload(preload)
     end
+  end
+
+  def get_by(attrs) do
+    Repo.get_by(Player, attrs)
   end
 
   def changeset(struct, params) do
