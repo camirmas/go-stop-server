@@ -7,6 +7,7 @@ defmodule GoStop.Player do
   schema "players" do
     field(:status, :string)
     field(:color, :string)
+    field(:has_passed, :boolean, default: false)
     embeds_one(:stats, Player.Stats)
     belongs_to(:user, User)
     belongs_to(:game, Game)
@@ -14,7 +15,7 @@ defmodule GoStop.Player do
     timestamps()
   end
 
-  @fields [:user_id, :game_id, :status, :color]
+  @fields [:user_id, :game_id, :status, :color, :has_passed]
   @accepted_statuses ~w(user-pending active)
   @accepted_colors ~w(black white)
 
