@@ -8,6 +8,7 @@ defmodule GoStop.Repo.Migrations.AddPlayersTable do
       add :status, :string, null: false
       add :color, :string, null: false
       add :stats, :map
+      add :has_passed, :boolean, default: false
 
       timestamps()
     end
