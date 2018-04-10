@@ -87,7 +87,7 @@ defmodule GoStopWeb.Schema do
     field :pass, :player do
       arg :game_id, non_null(:id)
 
-      resolve &Resolvers.Player.player_pass/3
+      resolve &Resolvers.Player.pass/3
     end
   end
 end

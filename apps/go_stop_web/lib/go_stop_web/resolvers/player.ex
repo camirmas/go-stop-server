@@ -2,41 +2,34 @@ defmodule GoStopWeb.Resolvers.Player do
   alias Ecto.Multi
 
   alias GoStop.{Repo, Player, Game}
+  import GoStopWeb.Errors
 
   def get_player(_parent, %{id: id}, _resolution) do
     {:ok, Player.get(id, preload: [:user, :game])}
   end
 
-  def player_pass(_parent, %{game_id: game_id},
-                  %{context: %{current_user: current_user}}) do
-    game = get_game(game_id)
+  def pass(_parent, %{game_id: game_id},
+           %{context: %{current_user: current_user}}) do
+    player = Player.get_by(%{game_id: game_id, user_id: current_user.id})
 
-    changeset = Player.changeset(%Player{}, %{})
+    if player do
+      player = player |> Repo.preload(:game)
 
-    if game do
-      player = get_player(game, current_user)
-
-      if player do
-        player = player |> Repo.preload(:game)
-
-        if player_turn?(player) do
-          update_player(game, player)
-        else
-          {:error, "Failed: player must wait a turn"}
-        end
+      if Player.is_turn?(player) do
+        update_player(player)
       else
-        {:error, "Failed: player does not exist"}
+        wrong_turn_error()
       end
     else
-      {:error, "Failed: game does not exist"}
+      game_not_found_error()
     end
   end
 
-  def player_pass(_, _, _) do
-    {:error, "Failed: user not authenticated"}
+  def pass(_, _, _) do
+    authentication_error()
   end
 
-  defp update_player(game, player) do
+  defp update_player(%{game: game} = player) do
     multi =
       Multi.new
       |> Multi.run(:player, fn _ ->
@@ -49,7 +42,7 @@ defmodule GoStopWeb.Resolvers.Player do
           # TODO: run score calculation
           Game.update(game, %{status: "complete"})
         else
-          new_player = get_new_player(game, player)
+          new_player = Player.get_opponent(player)
           Game.update(game, %{player_turn_id: new_player.id})
         end
       end)
@@ -57,29 +50,7 @@ defmodule GoStopWeb.Resolvers.Player do
     case Repo.transaction(multi) do
       {:ok, %{player: player}} -> {:ok, player}
       {:error, _name, changeset, _} ->
-        {:error, "Failed: #{parse_errors(changeset)}"}
+        changeset_errors(changeset)
     end
-  end
-
-  defp get_game(game_id) do
-    Game.get(game_id, preload: [:players])
-  end
-
-  defp get_player(game, current_user) do
-    Enum.find(game.players, fn p -> p.user_id == current_user.id end)
-  end
-
-  defp player_turn?(player) do
-    player && player.id == player.game.player_turn_id
-  end
-
-  defp get_new_player(game, player) do
-    Enum.find(game.players, fn p -> p.id != player.id end)
-  end
-
-  defp parse_errors(changeset) do
-    Enum.map(changeset.errors, fn {k, {v, _}} ->
-      "#{k} #{v}"
-    end)
   end
 end

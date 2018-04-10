@@ -1,20 +1,18 @@
 defmodule GoStopWeb.Resolvers.Game do
   alias Ecto.Multi
   alias GoStop.{Repo, Game, Player}
+  import GoStopWeb.Errors
 
   def list_games(_parent, _args, %{context: %{current_user: current_user}}) do
     {:ok, Game.list_for_user(current_user) |> Repo.preload(preloads())}
   end
-
   def list_games(_parent, _args, _resolution) do
     {:ok, Game.list(preload: preloads())}
   end
 
   def create_game(_parent,
-    %{opponent_id: opponent_id} = params,
+    %{opponent_id: opponent_id},
     %{context: %{current_user: current_user}}) do
-      params = Map.put(params, :user_id, current_user.id)
-
       multi =
         Multi.new()
         |> Multi.run(:game, fn _ ->
@@ -45,22 +43,16 @@ defmodule GoStopWeb.Resolvers.Game do
         {:ok, %{updated_game: game}} ->
           {:ok, game}
         {:error, _transaction_name, changeset, _} ->
-          {:error, "Failed: #{parse_errors(changeset)}"}
+          changeset_errors(changeset)
       end
   end
 
-  def create_game(_parent, data, context) do
-    {:error, "Failed: user not authenticated"}
+  def create_game(_, _, _) do
+    authentication_error()
   end
 
   def get_game(_parent, %{id: id}, _resolution) do
     {:ok, GoStop.Game.get(id, preload: preloads())}
-  end
-
-  defp parse_errors(changeset) do
-    Enum.map(changeset.errors, fn {k, {v, _}} ->
-      "#{k} #{v}"
-    end)
   end
 
   defp preloads do

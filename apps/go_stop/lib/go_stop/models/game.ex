@@ -86,7 +86,8 @@ defmodule GoStop.Game do
   end
 
   defp validate_turn(game, player_turn_id) do
-    player_ids = Enum.map(game.players, &(&1.id))
+    %{players: players} = game |> Repo.preload(:players)
+    player_ids = Enum.map(players, &(&1.id))
     if player_turn_id in player_ids do
       []
     else
