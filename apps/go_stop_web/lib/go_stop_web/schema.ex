@@ -78,5 +78,16 @@ defmodule GoStopWeb.Schema do
 
       resolve &Resolvers.Stone.add_stone/3
     end
+
+    @desc """
+    Pass on a turn. If both players pass, the Game is over. This is an
+    authenticated mutation: you must provide an Authorization header with the
+    format: Bearer [token]
+    """
+    field :pass, :player do
+      arg :game_id, non_null(:id)
+
+      resolve &Resolvers.Player.player_pass/3
+    end
   end
 end
