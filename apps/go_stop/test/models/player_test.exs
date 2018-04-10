@@ -1,7 +1,7 @@
 defmodule PlayerTest do
   use GoStop.DataCase, async: true
 
-  alias GoStop.{Repo, Player}
+  alias GoStop.{Repo, Game, Player}
 
   @params %{
     user_id: 1,
@@ -95,5 +95,19 @@ defmodule PlayerTest do
     player = insert(:player) |> Repo.preload(:game)
 
     assert Player.list_for_game(player.game, preload: [:game, :user]) == [player]
+  end
+
+  test "#get_opponent" do
+    player = insert(:player, %{color: "black"})
+    opponent = insert(:player, %{game: player.game, color: "white"})
+
+    assert Player.get_opponent(player).id == opponent.id
+  end
+
+  test "#is_turn?" do
+    player = insert(:player)
+    Game.update(player.game, %{player_turn_id: player.id})
+
+    assert player.id |> Player.get |> Player.is_turn?
   end
 end

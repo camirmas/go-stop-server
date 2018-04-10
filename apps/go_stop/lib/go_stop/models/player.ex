@@ -59,6 +59,16 @@ defmodule GoStop.Player do
     Repo.get_by(Player, attrs)
   end
 
+  def get_opponent(player) do
+    %{game: game} = player |> Repo.preload(game: [:players])
+    Enum.find(game.players, fn p -> p.id != player.id end)
+  end
+
+  def is_turn?(player) do
+    player = player |> Repo.preload(:game)
+    player.id == player.game.player_turn_id
+  end
+
   def changeset(struct, params) do
     struct
     |> cast(params, @fields)
