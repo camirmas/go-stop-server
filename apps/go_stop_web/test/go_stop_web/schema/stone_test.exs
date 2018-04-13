@@ -82,5 +82,30 @@ defmodule GoStopWeb.Schema.StoneTest do
         assert %{"errors" => [%{"message" => message}]} = res
         assert message == "Failed: game does not exist"
     end
+
+    test "cannot add a Stone to an ended Game",
+      %{conn: conn, player: player, token: token} do
+        {:ok, game} =
+          player.game
+          |> Repo.preload(:players)
+          |> Game.update(%{player_turn_id: player.id, status: "complete"})
+
+        query = """
+        mutation AddStone {
+          addStone(game_id: #{game.id}, x: 0, y: 0) {
+            id
+          }
+        }
+        """
+
+        res =
+          conn
+          |> put_req_header("authorization", "Bearer " <> token)
+          |> post("/api", %{query: query})
+          |> json_response(200)
+
+        assert %{"errors" => [%{"message" => message}]} = res
+        assert message == "Failed: game has ended"
+    end
   end
 end
