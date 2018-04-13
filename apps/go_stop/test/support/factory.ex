@@ -12,9 +12,8 @@ defmodule GoStop.Factory do
   end
 
   def game_factory do
-    [status] = Enum.take_random(~w(pending active complete), 1)
     %GoStop.Game{
-      status: status
+      status: "active"
     }
   end
 

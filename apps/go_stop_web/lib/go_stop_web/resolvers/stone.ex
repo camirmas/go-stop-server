@@ -21,6 +21,7 @@ defmodule GoStopWeb.Resolvers.Stone do
   defp create_stone(data, player) do
     player
     |> Repo.preload([:game])
+    |> validate_game()
     |> validate_turn()
     |> build_turn(data)
     |> execute_turn()
@@ -37,9 +38,7 @@ defmodule GoStopWeb.Resolvers.Stone do
       Game.update(game, %{player_turn_id: opponent.id})
     end)
   end
-  defp build_turn(false, _) do
-    wrong_turn_error()
-  end
+  defp build_turn({:error, _} = err, _), do: err
 
   defp execute_turn({:error, _} = err), do: err
   defp execute_turn(multi) do
@@ -50,7 +49,17 @@ defmodule GoStopWeb.Resolvers.Stone do
     end
   end
 
+  defp validate_turn({:error, _} = err), do: err
   defp validate_turn(player) do
-    Player.is_turn?(player) && player
+    if Player.is_turn?(player) do
+      player
+    else
+      wrong_turn_error()
+    end
   end
+
+  defp validate_game(%{game: %{status: "complete"}} = player) do
+    game_complete_error()
+  end
+  defp validate_game(player), do: player
 end

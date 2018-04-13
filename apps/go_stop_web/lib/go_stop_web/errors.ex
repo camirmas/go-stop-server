@@ -11,6 +11,10 @@ defmodule GoStopWeb.Errors do
     {:error, "Failed: game does not exist"}
   end
 
+  def game_complete_error do
+    {:error, "Failed: game has ended"}
+  end
+
   def changeset_errors(changeset) do
     {:error, "Failed: #{parse_errors(changeset)}"}
   end
