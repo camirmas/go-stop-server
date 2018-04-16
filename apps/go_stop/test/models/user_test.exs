@@ -17,10 +17,14 @@ defmodule UserTest do
     end
 
     test "changeset is invalid with improper email format" do
-      params = %{@params | email: "wrong"}
-      changeset = User.registration_changeset(%User{}, params)
+      invalid_emails = ~w(user@example,com user_at_foo.org user.name@example.
+                           foo@bar_baz.com foo@bar+baz.com foo@bar..com)
+      Enum.each(invalid_emails, fn email ->
+        params = %{@params | email: email}
+        changeset = User.registration_changeset(%User{}, params)
 
-      assert not is_valid(changeset)
+        assert not is_valid(changeset)
+      end)
     end
 
     test "changeset is invalid with improper password length" do
