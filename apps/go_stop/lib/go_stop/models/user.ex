@@ -20,6 +20,7 @@ defmodule GoStop.User do
     struct
     |> cast(params, @required_fields)
     |> validate_required(@required_fields)
+    |> update_change(:email, &String.downcase/1)
     |> validate_format(:email, ~r/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
     |> validate_length(:password, min: 8)
     |> validate_confirmation(:password, message: "Passwords do not match")
