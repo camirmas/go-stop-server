@@ -53,6 +53,7 @@ defmodule GoStopWeb.Mixfile do
       {:cowboy, "~> 1.0"},
       {:gettext, "~> 0.11"},
       {:go_stop, in_umbrella: true},
+      {:game_logic, in_umbrella: true},
       {:guardian, "~> 1.0"},
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
