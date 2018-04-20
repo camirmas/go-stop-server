@@ -118,6 +118,24 @@ defmodule GoStopWeb.Schema.GameTest do
       assert message == "Failed: user not authenticated"
     end
 
+    test "returns an error when the user's auth token is bad", %{conn: conn} do
+      query = """
+      mutation CreateGame {
+        createGame(opponentId: 1) {
+          id
+        }
+      }
+      """
+      res =
+        conn
+        |> put_req_header("authorization", "Bearer bad-news")
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+      assert %{"errors" => [%{"message" => message}]} = res
+      assert message == "Failed: user not authenticated"
+    end
+
     test "returns an error when the opponent cannot be found", %{conn: conn} do
       user = insert(:user)
       {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
