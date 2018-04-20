@@ -12,7 +12,7 @@ defmodule GoStopWeb.Plugs.UserContext do
 
   def build_context(conn) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-      current_user <- authorize(token) do
+      {:ok, current_user} <- authorize(token) do
         %{current_user: current_user}
       else
         _ -> %{}
@@ -21,10 +21,10 @@ defmodule GoStopWeb.Plugs.UserContext do
 
   defp authorize(token) do
     case GoStopWeb.Guardian.resource_from_token(token) do
-      nil ->
-        {:error, :unauthorized}
       {:ok, user, _claims} ->
-        user
+        {:ok, user}
+      _ ->
+        {:error, :unauthorized}
     end
   end
 end
