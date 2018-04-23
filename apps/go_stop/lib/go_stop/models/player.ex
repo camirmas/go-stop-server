@@ -5,12 +5,12 @@ defmodule GoStop.Player do
   alias GoStop.{Repo, User, Game, Player}
 
   schema "players" do
-    field(:status, :string)
-    field(:color, :string)
-    field(:has_passed, :boolean, default: false)
-    embeds_one(:stats, Player.Stats)
-    belongs_to(:user, User)
-    belongs_to(:game, Game)
+    field :status, :string
+    field :color, :string
+    field :has_passed, :boolean, default: false
+    embeds_one :stats, Player.Stats
+    belongs_to :user, User
+    belongs_to :game, Game
 
     timestamps()
   end
@@ -36,6 +36,7 @@ defmodule GoStop.Player do
   def create(attrs) do
     %Player{}
     |> changeset(attrs)
+    |> put_change(:stats, %{})
     |> Repo.insert()
   end
 
@@ -69,7 +70,14 @@ defmodule GoStop.Player do
     player.id == player.game.player_turn_id
   end
 
-  def changeset(struct, params) do
+  def capture_stone(player) do
+    player
+    |> changeset
+    |> put_embed(:stats, Player.Stats.capture_stone(player.stats))
+    |> Repo.update
+  end
+
+  def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @fields)
     |> validate_required(@fields)
@@ -78,6 +86,6 @@ defmodule GoStop.Player do
     |> assoc_constraint(:user)
     |> assoc_constraint(:game)
     |> unique_constraint(:color, name: :players_game_id_color_index)
-    |> cast_embed(:stats, with: &Player.Stats.changeset/2)
+    |> cast_embed(:stats)
   end
 end
