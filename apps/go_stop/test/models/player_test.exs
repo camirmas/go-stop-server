@@ -65,6 +65,18 @@ defmodule PlayerTest do
         Player.create(%{@params | game_id: player.game_id, color: player.color})
       assert [color: {"has already been taken", _}] = changeset.errors
     end
+
+    test "creates initial Player stats" do
+      game = insert(:game)
+      user = insert(:user)
+      {:ok, %{stats: stats}} =
+        :player
+        |> build(%{game_id: game.id, user_id: user.id})
+        |> Map.from_struct
+        |> Player.create
+
+      assert stats == %Player.Stats{captured_stones: 0}
+    end
   end
 
   describe "#get" do
