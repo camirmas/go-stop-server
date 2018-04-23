@@ -55,10 +55,10 @@ defmodule GoStopWeb.Schema.StoneTest do
           |> json_response(200)
 
         assert %{"errors" => [%{"message" => message}]} = res
-        assert message == "Failed: player must wait a turn"
+        assert message == "Failed: Player must wait a turn"
     end
 
-    test "returns errors with invalid params",
+    test "returns errors when accessing an unauthorized Game",
       %{conn: conn, player: player, token: token} do
         {:ok, game} =
           player.game
@@ -80,7 +80,7 @@ defmodule GoStopWeb.Schema.StoneTest do
           |> json_response(200)
 
         assert %{"errors" => [%{"message" => message}]} = res
-        assert message == "Failed: game does not exist"
+        assert message == "Failed: User is not a part of this game"
     end
 
     test "cannot add a Stone to an ended Game",
@@ -105,7 +105,7 @@ defmodule GoStopWeb.Schema.StoneTest do
           |> json_response(200)
 
         assert %{"errors" => [%{"message" => message}]} = res
-        assert message == "Failed: game has ended"
+        assert message == "Failed: Game has ended"
     end
   end
 end

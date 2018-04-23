@@ -16,7 +16,7 @@ defmodule GoStopWeb.Resolvers.Stone do
   end
 
   defp create_stone(_, nil) do
-    game_not_found_error()
+    unauthorized_game_error()
   end
   defp create_stone(data, player) do
     player
