@@ -115,7 +115,7 @@ defmodule GoStopWeb.Schema.GameTest do
         |> json_response(200)
 
       assert %{"errors" => [%{"message" => message}]} = res
-      assert message == "Failed: user not authenticated"
+      assert message == "Failed: User not authenticated"
     end
 
     test "returns an error when the user's auth token is bad", %{conn: conn} do
@@ -133,7 +133,7 @@ defmodule GoStopWeb.Schema.GameTest do
         |> json_response(200)
 
       assert %{"errors" => [%{"message" => message}]} = res
-      assert message == "Failed: user not authenticated"
+      assert message == "Failed: User not authenticated"
     end
 
     test "returns an error when the opponent cannot be found", %{conn: conn} do
