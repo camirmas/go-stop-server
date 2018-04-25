@@ -36,12 +36,13 @@ defmodule GoStop.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.1"},
-      {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12"},
+      {:comeonin, "~> 4.0"},
+      {:ecto, "~> 2.1"},
       {:ex_machina, "~> 2.1"},
-      {:faker_elixir_octopus, "~> 1.0.0"}
+      {:faker_elixir_octopus, "~> 1.0.0"},
+      {:poison, "~> 3.1.0"},
+      {:postgrex, ">= 0.0.0"},
     ]
   end
 
