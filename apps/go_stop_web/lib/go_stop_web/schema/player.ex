@@ -6,5 +6,6 @@ defmodule GoStopWeb.Schema.Player do
     field :user, :user
     field :game, :game
     field :color, :string
+    field :stats, :player_stats
   end
 end
