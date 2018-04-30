@@ -49,6 +49,7 @@ defmodule GoStopWeb.Mixfile do
     [
       {:absinthe, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4.0"},
+      {:bartender, "~> 0.1.0"},
       {:corsica, "~> 1.1.1"},
       {:cowboy, "~> 1.0"},
       {:gettext, "~> 0.11"},
@@ -57,7 +58,7 @@ defmodule GoStopWeb.Mixfile do
       {:guardian, "~> 1.0"},
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_ecto, "~> 3.2"},
+      {:phoenix_ecto, "~> 3.2"}
     ]
   end
 
