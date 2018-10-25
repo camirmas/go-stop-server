@@ -20,7 +20,7 @@ defmodule GoStopWeb.Resolvers.Stone do
   end
   defp create_stone(data, player) do
     player
-    |> Repo.preload([:game])
+    |> Repo.preload([game: [:stones]])
     |> validate_game()
     |> validate_turn()
     |> build_turn(data)
@@ -28,15 +28,18 @@ defmodule GoStopWeb.Resolvers.Stone do
   end
 
   defp build_turn(%{game: game} = player, data) do
-    Multi.new
-    |> Multi.run(:stone, fn _ ->
-      params = Map.put(data, :color, player.color)
-      Stone.create(params)
-    end)
-    |> Multi.run(:game, fn _ ->
-      opponent = Player.get_opponent(player)
-      Game.update(game, %{player_turn_id: opponent.id})
-    end)
+    changes = GameLogic.run(game)
+
+    multi =
+      Multi.new
+      |> Multi.run(:stone, fn _ ->
+        params = Map.put(data, :color, player.color)
+        Stone.create(params)
+      end)
+      |> Multi.run(:game, fn _ ->
+        opponent = Player.get_opponent(player)
+        Game.update(game, %{player_turn_id: opponent.id})
+      end)
   end
   defp build_turn({:error, _} = err, _), do: err
 
