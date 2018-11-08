@@ -20,6 +20,13 @@ defmodule GoStopWeb.Resolvers.User do
     {:ok, GoStop.User.get_by(data, preload: preloads())}
   end
 
+  def get_current_user(_parent, _data, %{context: %{current_user: current_user}}) do
+    {:ok, current_user}
+  end
+  def get_current_user(_parent, _data, _resolution) do
+    authentication_error()
+  end
+
   defp preloads do
     :games
   end

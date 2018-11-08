@@ -20,6 +20,11 @@ defmodule GoStopWeb.Schema do
       resolve &Resolvers.User.get_user/3
     end
 
+    @desc "Get current User information"
+    field :current_user, :user do
+      resolve &Resolvers.User.get_current_user/3
+    end
+
     @desc "Get all Games"
     field :games, list_of(:game) do
       resolve &Resolvers.Game.list_games/3
