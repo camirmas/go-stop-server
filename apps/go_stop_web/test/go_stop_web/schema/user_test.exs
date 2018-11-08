@@ -1,5 +1,6 @@
 defmodule GoStopWeb.Schema.UserTest do
   use GoStopWeb.ConnCase, async: true
+  import GoStopWeb.Guardian
 
   describe "users" do
     setup do
@@ -101,4 +102,47 @@ defmodule GoStopWeb.Schema.UserTest do
     end
   end
 
+  describe "currentUser" do
+    setup do
+      user = insert(:user, %{username: "dude"})
+
+      {:ok, token, _} = encode_and_sign(user, %{}, token_type: :access)
+
+      [user: user, token: token]
+    end
+
+    test "gets the current User", %{conn: conn, user: %{username: username}, token: token} do
+      query = """
+      {
+        currentUser {
+          username
+        }
+      }
+      """
+      res =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+      assert res == %{"data" => %{"currentUser" => %{"username" => username}}}
+    end
+
+    test "returns nil if the User is not found", %{conn: conn} do
+      query = """
+      {
+        currentUser {
+          username
+        }
+      }
+      """
+      res =
+        conn
+        |> post("/api", %{query: query})
+        |> json_response(200)
+
+      assert %{"errors" => [%{"message" => message}]} = res
+      assert message == "Failed: User not authenticated"
+    end
+  end
 end
