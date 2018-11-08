@@ -11,7 +11,8 @@ defmodule GoStopWeb.Resolvers.Authorization do
   defp check_password(password, user) do
     if Comeonin.Bcrypt.checkpw(password, user.encrypted_password) do
       {:ok, token, _claims} = GoStopWeb.Guardian.encode_and_sign(user)
-      {:ok, %{token: token}}
+      user = user |> Map.from_struct() |> Map.put(:token, token)
+      {:ok, user}
     else
       {:error, "Failed: invalid username/password combination"}
     end
